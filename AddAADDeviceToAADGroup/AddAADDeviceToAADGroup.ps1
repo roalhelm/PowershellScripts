@@ -1,10 +1,12 @@
 <#
 .SYNOPSIS
     This script adds devices to an Azure AD group based on a list provided in a CSV file.
+    It also checks if the device is already in the group before attempting to add it.
 
 .DESCRIPTION
     The script prompts the user for an Azure AD group name, then reads a CSV file named 'Devices.csv' containing device names.
-    It attempts to add each device to the specified Azure AD group. A log file is created to track successes and failures.
+    It verifies if each device is already a member of the specified Azure AD group before adding it.
+    A log file is created to track successes, failures, and already existing devices.
 
 .NOTES
     - Ensure that you have the AzureAD module installed before running this script.
@@ -12,8 +14,11 @@
     - The CSV file must be placed in the same directory as this script.
 
 .AUTHOR
-        Script created by Ronny Alhelm
-        Date: 12.03.2025
+
+    Original script by Ronny Alhelm
+    Version        : 1.2
+    Creation Date  : 2025-03-10
+    Last Modified  : 2025-03-13
 
 .EXAMPLE
     PS C:\> .\Add-DevicesToAADGroup.ps1
@@ -27,62 +32,106 @@ $groupName = Read-Host "Enter the Azure AD group name"
 # Check if the AzureAD module is installed
 $module = Get-Module -ListAvailable -Name AzureAD
 
-if (-not $module)
-{
-    # If the module is not found, install it for the current user
+if (-not $module) {
     Install-Module AzureAD -Scope CurrentUser -Force
     Write-Output "AzureAD module has been installed successfully."
-}
-else
-{
-    # If the module is already installed, inform the user
+} else {
     Write-Output "AzureAD module is already installed."
 }
 
+# Prompt the user for CSV file choice
+$csvChoice = Read-Host "Which CSV file do you want to use? Enter 1 for Devices.csv or 2 for Devices_In_AAD.csv"
+
+# Set the CSV file path based on user choice
+$csvPath = switch ($csvChoice) {
+    "1" { ".\Devices.csv" }
+    "2" { ".\Devices_In_AAD.csv" }
+    default {
+        Write-Host "Invalid choice. Defaulting to Devices.csv" -ForegroundColor Yellow
+        ".\Devices.csv"
+    }
+}
+
+# Check if the selected CSV file exists
+if (-not (Test-Path $csvPath)) {
+    Write-Host "Error: The selected CSV file '$csvPath' does not exist." -ForegroundColor Red
+    exit 1
+}
+
 # Inform the user about the required CSV format
-Write-Host "The CSV file must be named 'Devices.csv' and should have the following format:"
+Write-Host "The CSV file should have the following format:"
 Write-Host "DeviceName"
 Write-Host "Device1"
 Write-Host "Device2"
 Write-Host "..."
 Write-Host "Ensure the file is placed in the same directory as this script."
 
-# Import-Module AzureAD
-
 try {
-    $deviceList = Import-Csv -Path ".\Devices.csv"
+    $deviceList = Import-Csv -Path $csvPath
     Connect-AzureAD
     
     # Get the Azure AD group object
     $groupObj = Get-AzureADGroup -SearchString $groupName
     
-    $logFile = "./Device_Addition_Log.txt"
+    # Get the current members of the group
+    $groupMembers = Get-AzureADGroupMember -ObjectId $groupObj.ObjectId | Select-Object -ExpandProperty ObjectId
+    
+    # Define log files with timestamps
+    $timestamp = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
+    $logFile = "./Device_Addition_Log_$timestamp.txt"
+    $errorLogFile = "./Device_Addition_ErrorLog_$timestamp.txt"
+    
+    # Create header for log files
+    $logHeader = "=== Device Addition Log - Started at $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') ==="
+    Add-Content -Path $logFile -Value $logHeader
+    Add-Content -Path $errorLogFile -Value $logHeader
     
     foreach ($device in $deviceList) {
+        $currentTime = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
         $deviceObj = Get-AzureADDevice -SearchString $device.DeviceName
         
         if ($deviceObj -ne $null) {
-            try {
-                foreach ($dev in $deviceObj) {
-                    Add-AzureADGroupMember -ObjectId $groupObj.ObjectId -RefObjectId $dev.ObjectId       
-                    Add-Content -Path $logFile -Value "SUCCESS: Device $($device.DeviceName) added to group $groupName."
+            foreach ($dev in $deviceObj) {
+                if ($groupMembers -contains $dev.ObjectId) {
+                    $alreadyInGroupMessage = "[$currentTime] INFO: Device $($device.DeviceName) is already a member of group $groupName."
+                    Write-Host $alreadyInGroupMessage
+                    Add-Content -Path $logFile -Value $alreadyInGroupMessage
+                } else {
+                    try {
+                        Add-AzureADGroupMember -ObjectId $groupObj.ObjectId -RefObjectId $dev.ObjectId       
+                        $successMessage = "[$currentTime] SUCCESS: Device $($device.DeviceName) added to group $groupName."
+                        Write-Host $successMessage
+                        Add-Content -Path $logFile -Value $successMessage
+                    }
+                    catch {
+                        $errorMessage = "[$currentTime] ERROR: Device $($device.DeviceName) could not be added to the group. Error: $($_.Exception.Message)"
+                        Write-Host $errorMessage -ForegroundColor Red
+                        Add-Content -Path $logFile -Value $errorMessage
+                        Add-Content -Path $errorLogFile -Value $errorMessage
+                    }
                 }
             }
-            catch {
-                $errorMessage = "ERROR: Device $($device.DeviceName) could not be added to the group."
-                Write-Host $errorMessage
-                Add-Content -Path $logFile -Value $errorMessage
-            }
-        }
-        else {
-            $notFoundMessage = "WARNING: No device found in AAD for $($device.DeviceName)."
-            Write-Host $notFoundMessage
+        } else {
+            $notFoundMessage = "[$currentTime] WARNING: No device found in AAD for $($device.DeviceName)."
+            Write-Host $notFoundMessage -ForegroundColor Yellow
             Add-Content -Path $logFile -Value $notFoundMessage
+            Add-Content -Path $errorLogFile -Value $notFoundMessage
         }
     }
 }
 catch {
-    $exceptionMessage = "FATAL ERROR: $($_.Exception.Message)"
-    Write-Host $exceptionMessage
-    Add-Content -Path "./Device_Addition_Log.txt" -Value $exceptionMessage
+    $currentTime = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    $exceptionMessage = "[$currentTime] FATAL ERROR: $($_.Exception.Message)"
+    Write-Host $exceptionMessage -ForegroundColor Red
+    Add-Content -Path $logFile -Value $exceptionMessage
+    Add-Content -Path $errorLogFile -Value $exceptionMessage
 }
+
+# Add footer to log files
+$logFooter = "`n=== Script completed at $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') ==="
+Add-Content -Path $logFile -Value $logFooter
+Add-Content -Path $errorLogFile -Value $logFooter
+
+Write-Host "`nScript completed. Check the following files for details:"
+Write-Host "Main Log: $logFile"
+Write-Host "Error Log: $errorLogFile"
