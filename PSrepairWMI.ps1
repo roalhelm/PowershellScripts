@@ -1,4 +1,45 @@
-﻿# Abfrage des Clientnamens
+﻿<#
+.SYNOPSIS
+    Repairs Windows Management Instrumentation (WMI) on a remote computer.
+
+.DESCRIPTION
+    This script performs the following tasks:
+    - Connects to a remote computer
+    - Verifies network connectivity
+    - Stops and starts the WMI service
+    - Verifies and repairs the WMI repository
+    - Provides status updates throughout the process
+
+.NOTES
+    Filename: PSrepairWMI.ps1
+    Prerequisites:
+        - Administrative rights on the remote machine
+        - PowerShell remoting enabled
+        - Network connectivity to the target machine
+        - Valid credentials for the remote machine
+    
+    Known Issues:
+        - WMI repository repair might require multiple attempts
+        - Requires manual credential entry
+    
+.AUTHOR
+    Ronny Alhelm
+
+.VERSION
+    1.0.0
+
+.EXAMPLE
+    .\PSrepairWMI.ps1
+    Bitte geben Sie den Namen des Clients ein: SERVER01
+    # This will repair WMI on SERVER01
+
+.EXAMPLE
+    .\PSrepairWMI.ps1
+    Bitte geben Sie den Namen des Clients ein: WORKSTATION-PC
+    # Repairs WMI on WORKSTATION-PC with credential prompt
+#>
+
+# Abfrage des Clientnamens
 $remoteComputer = Read-Host -Prompt "Bitte geben Sie den Namen des Clients ein"
 
 if ([string]::IsNullOrWhiteSpace($remoteComputer)) {

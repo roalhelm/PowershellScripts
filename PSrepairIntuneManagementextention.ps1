@@ -1,4 +1,46 @@
-﻿# Abfrage des Clientnamens
+﻿<#
+.SYNOPSIS
+    Repairs or reinstalls the Microsoft Intune Management Extension on a remote client.
+
+.DESCRIPTION
+    This script performs the following tasks:
+    - Connects to a remote client machine
+    - Stops the Intune Management Extension service if running
+    - Uninstalls the existing Intune Management Extension
+    - Removes remaining installation files
+    - Triggers a new installation of the Intune Management Extension
+    - Restarts the service
+
+.NOTES
+    Filename: PSrepairIntuneManagementextention.ps1
+    Prerequisites:
+        - Administrative rights on the remote machine
+        - PowerShell remoting enabled
+        - Network connectivity to the target machine
+        - Valid credentials for the remote machine
+    
+    Known Issues:
+        - May require manual intervention if uninstallation fails
+        - Depends on network connectivity quality
+    
+.AUTHOR
+    Ronny Alhelm
+
+.VERSION
+    1.0.0
+
+.EXAMPLE
+    .\PSrepairIntuneManagementextention.ps1
+    Bitte geben Sie den Namen des Clients ein: CLIENT01
+    # This will repair the Intune Management Extension on CLIENT01
+
+.EXAMPLE
+    $cred = Get-Credential
+    .\PSrepairIntuneManagementextention.ps1
+    # Provides credentials before running the script
+#>
+
+# Abfrage des Clientnamens
 $clientName = Read-Host -Prompt "Bitte geben Sie den Namen des Clients ein"
 
 if ([string]::IsNullOrWhiteSpace($clientName)) {
