@@ -35,12 +35,26 @@ A collection of administrative PowerShell scripts for Windows system management,
   - Compares group memberships between two AD users
   - Displays membership differences
   - Color-coded output
+- [Get-ADUserLastLogon.ps1](Get-ADUserLastLogon.ps1)
+  - Retrieves last logon information for AD users
+  - Supports bulk user checking
+  - Exports results to CSV
 
 ### Remote Management
 - [ExecuteRemoteScript.ps1](ExecuteRemoteScript.ps1)
   - Executes PowerShell scripts on remote servers
   - Reads server list from file
   - Handles remote execution errors
+- [Test-RemoteConnection.ps1](Test-RemoteConnection.ps1)
+  - Tests connectivity to remote systems
+  - Verifies WinRM and RPC ports
+  - Provides detailed connection status
+
+### System Maintenance
+- [Clear-TempFiles.ps1](Clear-TempFiles.ps1)
+  - Cleans temporary files and folders
+  - Supports multiple temp locations
+  - Optional age-based cleanup
 
 ## Prerequisites
 
