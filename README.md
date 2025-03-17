@@ -13,3 +13,5 @@ CompareUserGroups.ps1
 Add-DevicesToAADGroup.ps1
 - The script prompts the user for an Azure AD group name, then reads a CSV file named 'Devices.csv' containing device names.
 - It attempts to add each device to the specified Azure AD group. A log file is created to track successes and failures.
+
+
