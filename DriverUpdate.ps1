@@ -32,6 +32,32 @@ function Write-Log {
     Add-Content -Path "$env:ProgramData\DriverUpdate.log" -Value $logMessage
 }
 
+# Function to ensure required modules are installed
+function Ensure-RequiredModules {
+    param (
+        [string[]]$ModuleNames
+    )
+    foreach ($module in $ModuleNames) {
+        if (-not (Get-Module -ListAvailable -Name $module)) {
+            Write-Log "Installing required module: $module"
+            try {
+                Install-Module -Name $module -Force -Scope CurrentUser -ErrorAction Stop
+                Write-Log "Successfully installed $module module"
+            }
+            catch {
+                Write-Log "Error installing $module module: $_"
+                return $false
+            }
+        }
+        else {
+            Write-Log "Required module already installed: $module"
+        }
+        
+        Import-Module -Name $module -Force
+    }
+    return $true
+}
+
 # Check if running as administrator
 if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Write-Log "Error: Script must be run as Administrator"
@@ -63,9 +89,11 @@ function Update-Drivers {
         [bool]$IsRemote = $false
     )
     try {
-        Write-Log "Initializing Windows Update module..."
-        Install-Module PSWindowsUpdate -Force -Confirm:$false
-        Import-Module PSWindowsUpdate
+        Write-Log "Checking required modules..."
+        if (-not (Ensure-RequiredModules -ModuleNames @('PSWindowsUpdate'))) {
+            Write-Log "Failed to ensure required modules are installed"
+            return 1
+        }
 
         Write-Log "Scanning for driver updates..."
         $updates = Get-WindowsUpdate -Category "Drivers" -AcceptAll
@@ -132,16 +160,17 @@ switch ($updateResult) {
     0 { Write-Log "Driver update process completed successfully" }
     1 { Write-Log "Error occurred during driver update process" }
     2 { 
-        Write-Log "Updates installed. System requires reboot."
-        if (-not $Remote) {
+        if ($Remote) {
+            Write-Log "Remote execution detected. Updates installed, reboot required but skipped due to -Remote parameter."
+        } else {
+            Write-Log "Updates installed. System requires reboot."
             $reboot = Read-Host "Do you want to restart the computer now? (Y/N)"
             if ($reboot -eq "Y") {
                 Write-Log "Initiating system restart..."
                 Restart-Computer -Force
+            } else {
+                Write-Log "Reboot skipped by user. Please restart the computer to complete installation."
             }
-        }
-        else {
-            Write-Log "Remote execution detected. Skipping reboot prompt."
         }
     }
     3 { Write-Log "Update process cancelled by user" }
