@@ -17,6 +17,12 @@
     Creation Date  : 2025-03-18
 #>
 
+# Add parameter block at the beginning of the script
+param(
+    [Parameter(Mandatory=$false)]
+    [switch]$Remote
+)
+
 # Function to write logs
 function Write-Log {
     param($Message)
@@ -53,6 +59,9 @@ function Handle-BitLocker {
 
 # Function to scan and install Windows updates
 function Update-Drivers {
+    param(
+        [bool]$IsRemote = $false
+    )
     try {
         Write-Log "Initializing Windows Update module..."
         Install-Module PSWindowsUpdate -Force -Confirm:$false
@@ -66,13 +75,34 @@ function Update-Drivers {
             return $true
         }
 
-        Write-Log "Found $($updates.Count) driver updates. Starting installation..."
+        Write-Log "Found $($updates.Count) driver updates:"
+        Write-Log "----------------------------------------"
+        foreach ($update in $updates) {
+            Write-Log "Title: $($update.Title)"
+            Write-Log "KB Article: $($update.KB)"
+            Write-Log "Size: $([math]::Round($update.Size / 1MB, 2)) MB"
+            Write-Log "Description: $($update.Description)"
+            Write-Log "----------------------------------------"
+        }
+
+        if (-not $IsRemote) {
+            $proceed = Read-Host "Do you want to proceed with installation? (Y/N)"
+            if ($proceed -ne "Y") {
+                Write-Log "Update installation cancelled by user."
+                return 3
+            }
+        }
+
+        Write-Log "Starting installation of driver updates..."
         
         if (Handle-BitLocker) {
             $result = Install-WindowsUpdate -Category "Drivers" -AcceptAll -AutoReboot:$false
             
             foreach ($update in $result) {
-                Write-Log "Update: $($update.Title) - Status: $($update.Status)"
+                Write-Log "Update: $($update.Title)"
+                Write-Log "Status: $($update.Status)"
+                Write-Log "Result Code: $($update.ResultCode)"
+                Write-Log "----------------------------------------"
             }
             
             if ($result.RebootRequired) {
@@ -96,19 +126,25 @@ function Update-Drivers {
 
 # Main execution
 Write-Log "Starting driver update process..."
-$updateResult = Update-Drivers
+$updateResult = Update-Drivers -IsRemote $Remote
 
 switch ($updateResult) {
     0 { Write-Log "Driver update process completed successfully" }
     1 { Write-Log "Error occurred during driver update process" }
     2 { 
         Write-Log "Updates installed. System requires reboot."
-        $reboot = Read-Host "Do you want to restart the computer now? (Y/N)"
-        if ($reboot -eq "Y") {
-            Write-Log "Initiating system restart..."
-            Restart-Computer -Force
+        if (-not $Remote) {
+            $reboot = Read-Host "Do you want to restart the computer now? (Y/N)"
+            if ($reboot -eq "Y") {
+                Write-Log "Initiating system restart..."
+                Restart-Computer -Force
+            }
+        }
+        else {
+            Write-Log "Remote execution detected. Skipping reboot prompt."
         }
     }
+    3 { Write-Log "Update process cancelled by user" }
 }
 
 exit $updateResult
