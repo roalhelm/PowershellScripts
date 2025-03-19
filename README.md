@@ -1,79 +1,118 @@
-# PowerShell Scripts Repository
+# PowerShell Administrative Scripts Collection
 
-A collection of useful PowerShell scripts for system administration and management tasks.
+A comprehensive collection of PowerShell scripts for system administration, focusing on Azure AD, Windows Updates, and system maintenance tasks.
 
-## Scripts
+## 🚀 Quick Start
 
-### Driver and Firmware Management
-- **DriverUpdate.ps1**
-  - Updates drivers using Windows Update
-  - Handles BitLocker status automatically
-  - Creates detailed logs
-  - No automatic reboots
+Clone this repository and run the scripts with appropriate permissions. Most scripts require administrative privileges and specific PowerShell modules.
 
-### Azure AD Management
-- **AADChecker.ps1**
-  - Checks device existence in Azure AD
-  - Creates separate CSV files for found/not found devices
-  - Supports bulk device verification
-
-- **AddAADDeviceToAADGroup.ps1**
-  - Adds devices to Azure AD groups
-  - Supports CSV input for bulk operations
-  - Verifies existing group membership
-
-### User Management
-- **CompareUserGroups.ps1**
-  - Compares group memberships across platforms:
-    - Active Directory
-    - Entra ID (Azure AD)
-    - Intune
-  - Shows missing group memberships
-  - Supports detailed comparison reports
-
-### CSV Management
-- **AddDeviceCSV.ps1**
-  - Creates and manages device lists in CSV format
-  - GUI-based interface
-  - Supports cleanup operations
-
-## Prerequisites
+## 📋 Requirements
 
 - PowerShell 5.1 or higher
+- Administrative privileges
 - Required PowerShell modules:
   - AzureAD
-  - Microsoft.Graph
   - PSWindowsUpdate
   - ActiveDirectory
+  - Microsoft.Graph (for some Azure AD operations)
 
-## Installation
+## 📦 Script Overview
 
-1. Clone the repository:
-```powershell
-git clone https://github.com/yourusername/PowershellScripts.git
-```
+### Azure AD Management Scripts
 
-2. Navigate to the script directory:
-```powershell
-cd PowershellScripts
-```
+#### [AADChecker.ps1](AddAADDeviceToAADGroup/AADChecker.ps1)
+- Verifies device existence in Azure AD
+- Processes devices from CSV input file
+- Creates separate CSV files for found/not found devices
+- Outputs detailed summary statistics
 
-## Usage
+#### [AddAADDeviceToAADGroup.ps1](AddAADDeviceToAADGroup/AddAADDeviceToAADGroup.ps1)
+- Adds devices to specified Azure AD groups
+- Supports bulk operations via CSV input
+- Checks for existing group memberships
+- Provides detailed logging of operations
 
-Each script includes detailed help information. Use Get-Help to view:
+#### [AddDeviceCSV.ps1](AddAADDeviceToAADGroup/AddDeviceCSV.ps1)
+- GUI tool for creating device lists
+- Manages CSV files for AAD operations
+- Supports comma, semicolon, or space-separated input
+- Includes cleanup functionality
+
+### System Maintenance Scripts
+
+#### [PSrepairWMI.ps1](PSrepairWMI.ps1)
+- Advanced WMI repository repair tool
+- Supports local and remote computer repair
+- Manages WMI repository folders
+- Verifies and repairs WMI consistency
+
+#### [PSrepairIntuneManagementextention.ps1](PSrepairIntuneManagementextention.ps1)
+- Repairs/reinstalls Intune Management Extension
+- Stops required services
+- Removes existing installation
+- Triggers new installation
+
+#### [DriverUpdate.ps1](DriverUpdate.ps1)
+- Updates system drivers via Windows Update
+- Manages BitLocker status during updates
+- Creates detailed operation logs
+- Supports both local and remote execution
+
+### Windows Update Management
+
+#### [REP_WindowsUpdate.ps1](REP_WindowsUpdate.ps1)
+- Resets Windows Update components
+- Cleans update cache
+- Removes problematic group policies
+- Triggers update scan cycles
+
+### User Management
+
+#### [CompareUserGroups.ps1](CompareUserGroups.ps1)
+- Compares group memberships between users
+- Shows differences in group memberships
+- Supports AD and Azure AD comparison
+
+### Intune Management
+
+#### [Intune-SyncDevice Scripts](Intune-SyncDevice/)
+- **Detection.ps1**: Checks last Intune sync time
+- **Remediation.ps1**: Forces Intune sync if needed
+
+### Dell Management
+
+#### [Dell Command Update Scripts](Remediations/)
+- **detectDellCommandUpdate.ps1**: Checks DCU installation
+- **remediatDellCommandUpdate.ps1**: Removes DCU if found
+
+## 🔧 Usage
+
+Most scripts include detailed help information. Use PowerShell's Get-Help for details:
 
 ```powershell
 Get-Help .\ScriptName.ps1 -Full
 ```
 
-## Contributing
+Example for AADChecker:
+```powershell
+.\AddAADDeviceToAADGroup\AADChecker.ps1
+```
+
+## 📝 Logging
+
+Scripts create logs in appropriate locations:
+- Windows Event Log for system operations
+- Custom log files in %ProgramData% for specific operations
+- Text file logs in script directories
+
+## 🤝 Contributing
 
 1. Fork the repository
-2. Create your feature branch
+2. Create a feature branch
 3. Commit your changes
 4. Push to the branch
-5. Create a new Pull Request
+5. Create a Pull Request
 
-## License
+## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the GNU General Public License v3 - see the [LICENSE](LICENSE) file for details.
