@@ -1,75 +1,79 @@
-# PowerShell Scripts Collection
+# PowerShell Scripts Repository
 
-A collection of administrative PowerShell scripts for Windows system management, Azure AD, and remote maintenance tasks.
+A collection of useful PowerShell scripts for system administration and management tasks.
 
-## Scripts Overview
+## Scripts
 
-### WMI Management
-- [PSrepairWMI.ps1](PSrepairWMI.ps1)
-  - Repairs WMI (Windows Management Instrumentation) on remote computers
-  - Restarts WMI service and repairs repository
-  - Includes remote connectivity checks and error handling
+### Driver and Firmware Management
+- **DriverUpdate.ps1**
+  - Updates drivers using Windows Update
+  - Handles BitLocker status automatically
+  - Creates detailed logs
+  - No automatic reboots
 
-### Azure AD Device Management
-- [AddAADDeviceToAADGroup/AddAADDeviceToAADGroup.ps1](AddAADDeviceToAADGroup/AddAADDeviceToAADGroup.ps1)
+### Azure AD Management
+- **AADChecker.ps1**
+  - Checks device existence in Azure AD
+  - Creates separate CSV files for found/not found devices
+  - Supports bulk device verification
+
+- **AddAADDeviceToAADGroup.ps1**
   - Adds devices to Azure AD groups
-  - Reads device names from CSV file
-  - Creates detailed operation logs
-  - Supports both Devices.csv and Devices_In_AAD.csv formats
+  - Supports CSV input for bulk operations
+  - Verifies existing group membership
 
-### Intune Management
-- [PSrepairIntuneManagementextention.ps1](PSrepairIntuneManagementextention.ps1)
-  - Repairs/reinstalls Intune Management Extension
-  - Performs service management and cleanup
-  - Supports remote execution
+### User Management
+- **CompareUserGroups.ps1**
+  - Compares group memberships across platforms:
+    - Active Directory
+    - Entra ID (Azure AD)
+    - Intune
+  - Shows missing group memberships
+  - Supports detailed comparison reports
 
-### Windows Update Management
-- [REP_WindowsUpdate.ps1](REP_WindowsUpdate.ps1)
-  - Resets Windows Update components
-  - Clears update cache
-  - Triggers update scans
-  - Manages related services
-
-### Active Directory Tools
-- [CompareUserGroups.ps1](CompareUserGroups.ps1)
-  - Compares group memberships between two AD users
-  - Displays membership differences
-  - Color-coded output
-- [Get-ADUserLastLogon.ps1](Get-ADUserLastLogon.ps1)
-  - Retrieves last logon information for AD users
-  - Supports bulk user checking
-  - Exports results to CSV
-
-### Remote Management
-- [ExecuteRemoteScript.ps1](ExecuteRemoteScript.ps1)
-  - Executes PowerShell scripts on remote servers
-  - Reads server list from file
-  - Handles remote execution errors
-- [Test-RemoteConnection.ps1](Test-RemoteConnection.ps1)
-  - Tests connectivity to remote systems
-  - Verifies WinRM and RPC ports
-  - Provides detailed connection status
-
-### System Maintenance
-- [Clear-TempFiles.ps1](Clear-TempFiles.ps1)
-  - Cleans temporary files and folders
-  - Supports multiple temp locations
-  - Optional age-based cleanup
+### CSV Management
+- **AddDeviceCSV.ps1**
+  - Creates and manages device lists in CSV format
+  - GUI-based interface
+  - Supports cleanup operations
 
 ## Prerequisites
 
 - PowerShell 5.1 or higher
-- Administrative privileges
-- Network connectivity to target systems
-- Required modules:
-  - AzureAD (for Azure AD scripts)
-  - ActiveDirectory (for AD scripts)
-  - Remote management enabled on target systems
+- Required PowerShell modules:
+  - AzureAD
+  - Microsoft.Graph
+  - PSWindowsUpdate
+  - ActiveDirectory
 
 ## Installation
 
-1. Clone or download this repository
-2. Ensure required PowerShell modules are installed
-3. Configure execution policy if needed:
+1. Clone the repository:
 ```powershell
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+git clone https://github.com/yourusername/PowershellScripts.git
+```
+
+2. Navigate to the script directory:
+```powershell
+cd PowershellScripts
+```
+
+## Usage
+
+Each script includes detailed help information. Use Get-Help to view:
+
+```powershell
+Get-Help .\ScriptName.ps1 -Full
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a new Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.

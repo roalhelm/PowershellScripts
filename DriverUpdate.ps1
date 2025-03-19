@@ -154,24 +154,14 @@ function Update-Drivers {
 
 # Main execution
 Write-Log "Starting driver update process..."
-$updateResult = Update-Drivers -IsRemote $Remote
+$updateResult = Update-Drivers
 
 switch ($updateResult) {
     0 { Write-Log "Driver update process completed successfully" }
     1 { Write-Log "Error occurred during driver update process" }
     2 { 
-        if ($Remote) {
-            Write-Log "Remote execution detected. Updates installed, reboot required but skipped due to -Remote parameter."
-        } else {
-            Write-Log "Updates installed. System requires reboot."
-            $reboot = Read-Host "Do you want to restart the computer now? (Y/N)"
-            if ($reboot -eq "Y") {
-                Write-Log "Initiating system restart..."
-                Restart-Computer -Force
-            } else {
-                Write-Log "Reboot skipped by user. Please restart the computer to complete installation."
-            }
-        }
+        Write-Log "Updates installed successfully. System requires reboot to complete installation."
+        Write-Log "Please restart your computer at a convenient time."
     }
     3 { Write-Log "Update process cancelled by user" }
 }
