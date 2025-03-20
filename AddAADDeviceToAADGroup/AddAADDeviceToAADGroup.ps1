@@ -3,6 +3,24 @@
     This script adds devices to an Azure AD group based on a list provided in a CSV file.
     It also checks if the device is already in the group before attempting to add it.
 
+.CHANGES
+    Version 1.2 (2025-03-13):
+    - Added group existence validation
+    - Added multiple group detection
+    - Improved error handling for group operations
+    - Added separate error log file
+
+    Version 1.1 (2025-03-11):
+    - Added support for multiple CSV file selection
+    - Enhanced logging with timestamps
+    - Added try-catch blocks for better error handling
+
+    Version 1.0 (2025-03-10):
+    - Initial release
+    - Basic functionality to add devices to AAD group
+    - CSV file support
+    - Basic logging
+
 .DESCRIPTION
     The script prompts the user for an Azure AD group name, then reads a CSV file named 'Devices.csv' containing device names.
     It verifies if each device is already a member of the specified Azure AD group before adding it.
@@ -70,8 +88,20 @@ try {
     $deviceList = Import-Csv -Path $csvPath
     Connect-AzureAD
     
-    # Get the Azure AD group object
+    # Get the Azure AD group object and test if it exists
     $groupObj = Get-AzureADGroup -SearchString $groupName
+    
+    if ($null -eq $groupObj) {
+        Write-Host "Error: The specified Azure AD group '$groupName' does not exist." -ForegroundColor Red
+        exit 1
+    }
+    
+    if ($groupObj.Count -gt 1) {
+        Write-Host "Warning: Multiple groups found with the name '$groupName'. Please specify a more precise group name." -ForegroundColor Yellow
+        Write-Host "Found groups:"
+        $groupObj | Format-Table DisplayName, ObjectId
+        exit 1
+    }
     
     # Get the current members of the group
     $groupMembers = Get-AzureADGroupMember -ObjectId $groupObj.ObjectId | Select-Object -ExpandProperty ObjectId
