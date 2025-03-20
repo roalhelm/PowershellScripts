@@ -2,6 +2,20 @@
 .SYNOPSIS
     Updates drivers and firmware on Windows devices using native Windows methods.
 
+.CHANGES
+    Version 1.1 (2025-03-20):
+    - Added remote update capability with -Remote switch parameter
+    - Enhanced BitLocker handling with automatic suspension
+    - Improved logging with detailed update information
+    - Added size information for updates in MB
+
+    Version 1.0 (2025-03-18):
+    - Initial release
+    - Basic driver update functionality
+    - Windows Update integration
+    - Basic logging implementation
+    - BitLocker status checking
+
 .DESCRIPTION
     This script:
     1. Checks for available driver updates using Windows Update
