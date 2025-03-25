@@ -1,6 +1,7 @@
 <#
 .SYNOPSIS
     Executes a specified PowerShell script on a list of remote servers.
+    GitHub Repository: https://github.com/roalhelm/
 
 .DESCRIPTION
     This script reads a list of server names from a file and executes a specified 

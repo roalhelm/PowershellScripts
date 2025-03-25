@@ -1,6 +1,7 @@
 <#
 .SYNOPSIS
     Compares the group memberships of two Active Directory users. (Version 1.0)
+    GitHub Repository: https://github.com/roalhelm/
 
 .DESCRIPTION
     This script retrieves the group memberships of two users from Active Directory and compares them. It lists the groups for each user and highlights any groups that the second user is missing compared to the first user.

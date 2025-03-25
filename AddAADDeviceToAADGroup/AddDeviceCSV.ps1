@@ -2,6 +2,7 @@
 .SYNOPSIS
     Creates a CSV file containing a list of device names entered through a GUI.
     The GUI also displays the current contents of the CSV file.
+    GitHub Repository: https://github.com/roalhelm/
 
 .DESCRIPTION
     This script provides a graphical user interface (GUI) to enter a list of device names.

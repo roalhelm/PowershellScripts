@@ -2,6 +2,7 @@
 .SYNOPSIS
     Checks if devices listed in a CSV file exist in Azure Active Directory (AAD) and generates separate CSV files 
     for devices found and not found in AAD.
+    GitHub Repository: https://github.com/roalhelm/
 
 .DESCRIPTION
     This script reads a list of device names from a CSV file and checks each device against Azure AD.

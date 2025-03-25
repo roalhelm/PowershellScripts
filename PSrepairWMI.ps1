@@ -1,6 +1,7 @@
 ﻿<#
 .SYNOPSIS
     Advanced WMI repair script for local and remote computers.
+    GitHub Repository: https://github.com/roalhelm/
 
 .DESCRIPTION
     This script performs comprehensive WMI repairs:

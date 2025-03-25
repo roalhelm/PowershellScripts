@@ -6,6 +6,7 @@
 # This PowerShell script is designed to reset the Windows Update components on a Windows system.
 # It accomplishes this by stopping necessary services, removing cached update files, and triggering
 # update scans. This can help resolve issues with Windows Update when updates are stuck or fail to install.
+# GitHub Repository: https://github.com/roalhelm/
 
 # Description:
 # This script will:

@@ -1,6 +1,7 @@
 <#
 .SYNOPSIS
     Uninstalls Dell Command Update from the system.
+    GitHub Repository: https://github.com/roalhelm/
 
 .DESCRIPTION
     This script removes Dell Command Update by:

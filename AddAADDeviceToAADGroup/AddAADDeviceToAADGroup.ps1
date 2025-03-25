@@ -2,6 +2,7 @@
 .SYNOPSIS
     This script adds devices to an Azure AD group based on a list provided in a CSV file.
     It also checks if the device is already in the group before attempting to add it.
+    GitHub Repository: https://github.com/roalhelm/
 
 .CHANGES
     Version 1.2 (2025-03-13):

@@ -1,6 +1,7 @@
 <#
 .SYNOPSIS
     Detects if Dell Command Update is installed on the system.
+    GitHub Repository: https://github.com/roalhelm/
 
 .DESCRIPTION
     This script checks for Dell Command Update installation using multiple methods:

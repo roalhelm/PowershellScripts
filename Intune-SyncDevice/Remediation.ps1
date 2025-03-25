@@ -1,6 +1,7 @@
 <#
 .SYNOPSIS
     Triggers an immediate Intune sync by running the PushLaunch scheduled task.
+    GitHub Repository: https://github.com/roalhelm/
 
 .DESCRIPTION
     This script performs the following tasks:

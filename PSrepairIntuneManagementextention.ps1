@@ -1,6 +1,7 @@
 ﻿<#
 .SYNOPSIS
     Repairs or reinstalls the Microsoft Intune Management Extension on a remote client.
+    GitHub Repository: https://github.com/roalhelm/
 
 .DESCRIPTION
     This script performs the following tasks:

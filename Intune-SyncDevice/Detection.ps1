@@ -1,6 +1,7 @@
 <#
 .SYNOPSIS
     Detects if the last Intune sync was performed within the last 2 days.
+    GitHub Repository: https://github.com/roalhelm/
 
 .DESCRIPTION
     This script performs the following tasks:

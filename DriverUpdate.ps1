@@ -1,6 +1,7 @@
 <#
 .SYNOPSIS
     Updates drivers and firmware on Windows devices using native Windows methods.
+    GitHub Repository: https://github.com/roalhelm/
 
 .CHANGES
     Version 1.1 (2025-03-20):
