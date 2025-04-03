@@ -34,6 +34,9 @@
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
+# Load external function script
+. "$PSScriptRoot\Add-DevicesToAADGroupFunction.ps1"
+
 # Function to load CSV content into the output text box
 function Load-CSVContent {
     if (Test-Path "Devices.csv") {
@@ -47,7 +50,7 @@ function Load-CSVContent {
 # Create the GUI
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "Device CSV Creator"
-$form.Size = New-Object System.Drawing.Size(700, 350)
+$form.Size = New-Object System.Drawing.Size(700, 400)
 $form.StartPosition = [System.Windows.Forms.FormStartPosition]::CenterScreen
 
 # Label for input box
@@ -78,19 +81,31 @@ $outputBox.Location = New-Object System.Drawing.Point(350, 30)
 $outputBox.ReadOnly = $true
 $outputBox.ScrollBars = "Vertical"
 
+# Label for group name input
+$groupLabel = New-Object System.Windows.Forms.Label
+$groupLabel.Text = "Azure AD Group Name:"
+$groupLabel.AutoSize = $true
+$groupLabel.Location = New-Object System.Drawing.Point(20, 190)
+
+# TextBox for group name input
+$groupTextBox = New-Object System.Windows.Forms.TextBox
+$groupTextBox.Width = 200
+$groupTextBox.Height = 20
+$groupTextBox.Location = New-Object System.Drawing.Point(20, 210)
+
 # Button to create the CSV (centered below text boxes)
 $button = New-Object System.Windows.Forms.Button
 $button.Text = "Create CSV"
 $button.Width = 120
 $button.Height = 30
-$button.Location = New-Object System.Drawing.Point(150, 200)
+$button.Location = New-Object System.Drawing.Point(150, 250)
 
 # Button to close the window (centered below text boxes)
 $closeButton = New-Object System.Windows.Forms.Button
 $closeButton.Text = "Close"
 $closeButton.Width = 120
 $closeButton.Height = 30
-$closeButton.Location = New-Object System.Drawing.Point(400, 200)
+$closeButton.Location = New-Object System.Drawing.Point(400, 250)
 $closeButton.Add_Click({ $form.Close() })
 
 # Button to cleanup the CSV file
@@ -98,7 +113,14 @@ $cleanupButton = New-Object System.Windows.Forms.Button
 $cleanupButton.Text = "Cleanup CSV"
 $cleanupButton.Width = 120
 $cleanupButton.Height = 30
-$cleanupButton.Location = New-Object System.Drawing.Point(275, 200)
+$cleanupButton.Location = New-Object System.Drawing.Point(275, 250)
+
+# Add to Group button
+$addToGroupButton = New-Object System.Windows.Forms.Button
+$addToGroupButton.Text = "Add to AAD Group"
+$addToGroupButton.Width = 120
+$addToGroupButton.Height = 30
+$addToGroupButton.Location = New-Object System.Drawing.Point(230, 205)
 
 # Event handler for the button
 $button.Add_Click({
@@ -143,10 +165,39 @@ $cleanupButton.Add_Click({
     }
 })
 
-# Update button positions for better spacing
-$button.Location = New-Object System.Drawing.Point(150, 200)
-$cleanupButton.Location = New-Object System.Drawing.Point(275, 200)
-$closeButton.Location = New-Object System.Drawing.Point(400, 200)
+# Add event handler for Add to Group button
+$addToGroupButton.Add_Click({
+    if ([string]::IsNullOrWhiteSpace($groupTextBox.Text)) {
+        [System.Windows.Forms.MessageBox]::Show("Please enter an Azure AD group name.", "Error")
+        return
+    }
+
+    try {
+        $result = Add-DevicesToAADGroup -GroupName $groupTextBox.Text -CsvPath ".\Devices.csv"
+        
+        # Create summary message
+        $summary = @"
+Operation completed:
+Successfully added: $($result.Success)
+Already members: $($result.AlreadyMember)
+Not found: $($result.NotFound)
+Failed: $($result.Failed)
+
+Log files:
+$($result.LogFile)
+$($result.ErrorLogFile)
+"@
+
+        if ($result.Failed -eq 0 -and $result.NotFound -eq 0) {
+            [System.Windows.Forms.MessageBox]::Show($summary, "Success")
+        } else {
+            [System.Windows.Forms.MessageBox]::Show("$summary`n`nSome operations failed. Check error log for details.", "Warning")
+        }
+    }
+    catch {
+        [System.Windows.Forms.MessageBox]::Show("Error: $_", "Error")
+    }
+})
 
 # Load CSV content initially
 Load-CSVContent
@@ -157,8 +208,11 @@ $form.Controls.Add($textBox)
 $form.Controls.Add($outputLabel)
 $form.Controls.Add($outputBox)
 $form.Controls.Add($button)
-$form.Controls.Add($cleanupButton)  # Add the new cleanup button
+$form.Controls.Add($cleanupButton)
 $form.Controls.Add($closeButton)
+$form.Controls.Add($groupLabel)
+$form.Controls.Add($groupTextBox)
+$form.Controls.Add($addToGroupButton)
 
 # Show the form
 $form.ShowDialog()
