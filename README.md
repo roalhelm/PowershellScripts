@@ -6,6 +6,17 @@ A comprehensive collection of PowerShell scripts for system administration, focu
 
 Clone this repository and run the scripts with appropriate permissions. Most scripts require administrative privileges and specific PowerShell modules.
 
+```powershell
+# Clone the repository
+git clone https://github.com/roalhelm/PowershellScripts.git
+
+# Navigate to the script directory
+cd PowershellScripts
+
+# Run GUI tool for device management
+.\AddAADDeviceToAADGroup\DevicetoAADGroupGUI.ps1
+```
+
 ## 📋 Requirements
 
 - PowerShell 5.1 or higher
@@ -20,6 +31,23 @@ Clone this repository and run the scripts with appropriate permissions. Most scr
 
 ### Azure AD Management Scripts
 
+#### GUI Tools
+- **[DevicetoAADGroupGUI.ps1](AddAADDeviceToAADGroup/DevicetoAADGroupGUI.ps1)**
+  - Modern Windows Forms interface
+  - Live device list preview
+  - Multiple input format support
+  - Integrated AAD group management
+  - Real-time validation
+
+#### Core Functions
+- **[Add-DevicesToAADGroupFunction.ps1](AddAADDeviceToAADGroup/Add-DevicesToAADGroupFunction.ps1)**
+  - Reusable AAD group management function
+  - Detailed operation logging
+  - Error handling and reporting
+  - Status object return
+  - CSV file support
+
+#### Utility Scripts
 #### [AADChecker.ps1](AddAADDeviceToAADGroup/AADChecker.ps1)
 - Verifies device existence in Azure AD
 - Processes devices from CSV input file
@@ -96,6 +124,19 @@ Get-Help .\ScriptName.ps1 -Full
 Example for AADChecker:
 ```powershell
 .\AddAADDeviceToAADGroup\AADChecker.ps1
+```
+
+## 📊 Usage Examples
+
+```powershell
+# Add devices to AAD group using GUI
+.\DevicetoAADGroupGUI.ps1
+
+# Add devices using function
+$result = Add-DevicesToAADGroup -GroupName "TestGroup" -CsvPath ".\Devices.csv"
+
+# Check AAD device status
+.\AADChecker.ps1 -InputFile "devices.csv"
 ```
 
 ## 📝 Logging
