@@ -5,6 +5,10 @@
     GitHub Repository: https://github.com/roalhelm/
 
 .CHANGES
+    Version 1.3 (2025-04-28):
+    - Added CSV header validation to ensure "DeviceName" column exists
+    - Added detailed error messaging for CSV format issues
+
     Version 1.2 (2025-03-13):
     - Added group existence validation
     - Added multiple group detection
@@ -35,9 +39,9 @@
 .AUTHOR
 
     Original script by Ronny Alhelm
-    Version        : 1.2
+    Version        : 1.3
     Creation Date  : 2025-03-10
-    Last Modified  : 2025-03-13
+    Last Modified  : 2025-04-28
 
 .EXAMPLE
     PS C:\> .\Add-DevicesToAADGroup.ps1
@@ -74,6 +78,14 @@ $csvPath = switch ($csvChoice) {
 # Check if the selected CSV file exists
 if (-not (Test-Path $csvPath)) {
     Write-Host "Error: The selected CSV file '$csvPath' does not exist." -ForegroundColor Red
+    exit 1
+}
+
+# Validate CSV header
+$csvHeader = Get-Content -Path $csvPath -TotalCount 1
+if ($csvHeader -ne "DeviceName") {
+    Write-Host "Error: The CSV file must have 'DeviceName' as the header in the first row." -ForegroundColor Red
+    Write-Host "Current header is: $csvHeader" -ForegroundColor Yellow
     exit 1
 }
 
