@@ -1,6 +1,9 @@
 ﻿<#
 .SYNOPSIS
     Advanced WMI repair script for local and remote computers.
+    .Usage
+        PS> .\PSrepairWMI.ps1
+        PS> .\PSrepairWMI.ps1  # Prompts for computer name; press Enter for local repair or enter remote computer name.
     GitHub Repository: https://github.com/roalhelm/
 
 .DESCRIPTION
