@@ -5,6 +5,9 @@
     GitHub Repository: https://github.com/roalhelm/
 
 .CHANGES
+    Version 1.4 (2025-06-27):
+    - Added compatibility for groups with more than 100 members
+    
     Version 1.3 (2025-04-28):
     - Added CSV header validation to ensure "DeviceName" column exists
     - Added detailed error messaging for CSV format issues
@@ -39,9 +42,9 @@
 .AUTHOR
 
     Original script by Ronny Alhelm
-    Version        : 1.3
+    Version        : 1.4
     Creation Date  : 2025-03-10
-    Last Modified  : 2025-04-28
+    Last Modified  : 2025-06-27
 
 .EXAMPLE
     PS C:\> .\Add-DevicesToAADGroup.ps1
@@ -117,7 +120,7 @@ try {
     }
     
     # Get the current members of the group
-    $groupMembers = Get-AzureADGroupMember -ObjectId $groupObj.ObjectId | Select-Object -ExpandProperty ObjectId
+    $groupMembers = Get-AzureADGroupMember -ObjectId $groupObj.ObjectId -All $true | Select-Object -ExpandProperty ObjectId
     
     # Define log files with timestamps
     $timestamp = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
