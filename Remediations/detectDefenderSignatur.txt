@@ -1,0 +1,12 @@
+# Prüft, ob die Defender-Signatur aktuell ist (max. 1 Tag alt)
+
+$defender = Get-MpComputerStatus
+$signatureAge = (Get-Date) - $defender.AntispywareSignatureLastUpdated
+
+if ($signatureAge.TotalDays -le 1) {
+    Write-Output "Compliant"
+    exit 0
+} else {
+    Write-Output "Non-Compliant"
+    exit 1
+}
