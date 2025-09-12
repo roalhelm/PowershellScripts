@@ -1,6 +1,7 @@
+
 # PowerShell Administrative Scripts Collection
 
-A comprehensive collection of PowerShell scripts for system administration, focusing on Azure AD, Windows Updates, and system maintenance tasks.
+A comprehensive collection of PowerShell scripts for system administration, Intune, Windows Updates, user/group management, and remediation tasks.
 
 ## 🚀 Quick Start
 
@@ -13,8 +14,8 @@ git clone https://github.com/roalhelm/PowershellScripts.git
 # Navigate to the script directory
 cd PowershellScripts
 
-# Run GUI tool for device management
-.\AddAADDeviceToAADGroup\DevicetoAADGroupGUI.ps1
+# Example: Run a detection script
+.\DetectRuntime6.ps1
 ```
 
 ## 📋 Requirements
@@ -22,108 +23,44 @@ cd PowershellScripts
 - PowerShell 5.1 or higher
 - Administrative privileges
 - Required PowerShell modules:
-  - AzureAD
   - PSWindowsUpdate
-  - ActiveDirectory
-  - Microsoft.Graph (for some Azure AD operations)
+  - Microsoft.Graph (for Azure/Intune/Graph operations)
+  - ActiveDirectory (for AD scripts)
+
 
 ## 📦 Script Overview
 
-### Azure AD Management Scripts
+### System & Update Scripts
 
-#### GUI Tools
-- **[DevicetoAADGroupGUI.ps1](AddAADDeviceToAADGroup/DevicetoAADGroupGUI.ps1)**
-  - Modern Windows Forms interface
-  - Live device list preview
-  - Multiple input format support
-  - Integrated AAD group management
-  - Real-time validation
+- **[DetectRuntime6.ps1](DetectRuntime6.ps1)**: Detects if .NET Desktop Runtime 6 is installed
+- **[DriverUpdate.ps1](DriverUpdate.ps1)**: Updates system drivers via Windows Update (BitLocker aware)
+- **[ExecuteRemoteScript.ps1](ExecuteRemoteScript.ps1)**: Runs a script on multiple remote servers
+- **[GraphApiOdataNextLink.ps1](GraphApiOdataNextLink.ps1)**: Retrieves all Azure AD groups/devices via Graph API (paging)
+- **[PSrepairIntuneManagementextention.ps1](PSrepairIntuneManagementextention.ps1)**: Repairs/reinstalls Intune Management Extension
+- **[PSrepairWMI.ps1](PSrepairWMI.ps1)**: Repairs local/remote WMI repository
+- **[ReinstallCompanyPortal.ps1](ReinstallCompanyPortal.ps1)**: Removes and reinstalls Company Portal (WinGet)
+- **[REP_WindowsUpdate.ps1](REP_WindowsUpdate.ps1)**: Resets Windows Update components
 
-#### Core Functions
-- **[Add-DevicesToAADGroupFunction.ps1](AddAADDeviceToAADGroup/Add-DevicesToAADGroupFunction.ps1)**
-  - Reusable AAD group management function
-  - Detailed operation logging
-  - Error handling and reporting
-  - Status object return
-  - CSV file support
+### User & Group Management
 
-#### Utility Scripts
-- **[AADChecker.ps1](AddAADDeviceToAADGroup/AADChecker.ps1)**
-  - Verifies device existence in Azure AD
-  - Processes devices from CSV input file
-  - Creates separate CSV files for found/not found devices
-  - Outputs detailed summary statistics
+- **[ADCompareUserGroups.ps1](ADCompareUserGroups.ps1)**: Compares group memberships of two AD users
+- **[IntuneCompareUser.ps1](IntuneCompareUser/IntuneCompareUser.ps1)**: Compares multiple users in Entra ID (Azure AD)
 
-- **[AddAADDeviceToAADGroup.ps1](AddAADDeviceToAADGroup/AddAADDeviceToAADGroup.ps1)**
-  - Adds devices to specified Azure AD groups
-  - Supports bulk operations via CSV input
-  - Checks for existing group memberships
-  - Provides detailed logging of operations
+### Remediations & Detection (Intune, Office, Dell, Defender)
 
-- **[AddDeviceCSV.ps1](AddAADDeviceToAADGroup/AddDeviceCSV.ps1)**
-  - GUI tool for creating device lists
-  - Manages CSV files for AAD operations
-  - Supports comma, semicolon, or space-separated input
-  - Includes cleanup functionality
+- **[Remediations/detectDefenderSignatur.txt](Remediations/detectDefenderSignatur.txt)**: Checks if Defender signature is up to date
+- **[Remediations/detectDellCommandUpdate.ps1](Remediations/detectDellCommandUpdate.ps1)**: Detects Dell Command Update installation
+- **[Remediations/remediatDellCommandUpdate.ps1](Remediations/remediatDellCommandUpdate.ps1)**: Uninstalls Dell Command Update
+- **[Remediations/detectOfficeUpdates.ps1](Remediations/detectOfficeUpdates.ps1)**: Detects if latest Office updates are installed
+- **[Remediations/remediatOfficeUpdates.ps1](Remediations/remediatOfficeUpdates.ps1)**: Installs missing Office updates
 
-### System Maintenance Scripts
+#### Intune Sync & Win32 Apps
 
-- **[PSrepairWMI.ps1](PSrepairWMI.ps1)**
-  - Advanced WMI repository repair tool
-  - Supports local and remote computer repair
-  - Manages WMI repository folders
-  - Verifies and repairs WMI consistency
-
-- **[PSrepairIntuneManagementextention.ps1](PSrepairIntuneManagementextention.ps1)**
-  - Repairs/reinstalls Intune Management Extension
-  - Stops required services
-  - Removes existing installation
-  - Triggers new installation
-
-- **[DriverUpdate.ps1](DriverUpdate.ps1)**
-  - Updates system drivers via Windows Update
-  - Manages BitLocker status during updates
-  - Creates detailed operation logs
-  - Supports both local and remote execution
-
-### Windows Update Management
-
-- **[REP_WindowsUpdate.ps1](REP_WindowsUpdate.ps1)**
-  - Resets Windows Update components
-  - Cleans update cache
-  - Removes problematic group policies
-  - Triggers update scan cycles
-
-- **[detectOfficeUpdates.ps1](Remediations/detectOfficeUpdates.ps1)**
-  - Detects if the latest monthly Office updates are installed
-  - Uses PSWindowsUpdate module for compliance detection
-
-- **[remediatOfficeUpdates.ps1](Remediations/remediatOfficeUpdates.ps1)**
-  - Installs all missing Office updates via Windows Update
-  - Uses PSWindowsUpdate module and reboots if required
-
-### User Management
-
-- **[CompareUserGroups.ps1](CompareUserGroups.ps1)**
-  - Compares group memberships between users
-  - Shows differences in group memberships
-  - Supports AD and Azure AD comparison
-
-- **[IntuneCompareUser.ps1](IntuneCompareUser/IntuneCompareUser.ps1)**
-  - Compares multiple users in Microsoft Entra ID (Azure AD)
-  - Displays selected properties and group membership differences
-
-### Intune Management
-
-- **[Intune-SyncDevice Scripts](Intune-SyncDevice/)**
-  - **Detection.ps1**: Checks last Intune sync time
-  - **Remediation.ps1**: Forces Intune sync if needed
-
-### Dell Management
-
-- **[Dell Command Update Scripts](Remediations/)**
-  - **detectDellCommandUpdate.ps1**: Checks DCU installation
-  - **remediatDellCommandUpdate.ps1**: Removes DCU if found
+- **[Remediations/Intune-SyncDevice/Detection.ps1](Remediations/Intune-SyncDevice/Detection.ps1)**: Checks if last Intune sync was recent
+- **[Remediations/Intune-SyncDevice/Remediation.ps1](Remediations/Intune-SyncDevice/Remediation.ps1)**: Forces Intune sync
+- **[Remediations/RepairIntuneWin32Apps/CheckLastSync.ps1](Remediations/RepairIntuneWin32Apps/CheckLastSync.ps1)**: Triggers Intune sync for all devices
+- **[Remediations/RepairIntuneWin32Apps/detectIntuneWin32Apps.ps1](Remediations/RepairIntuneWin32Apps/detectIntuneWin32Apps.ps1)**: Detects failed Win32 app installations
+- **[Remediations/RepairIntuneWin32Apps/remediateIntuneWin32Apps.ps1](Remediations/RepairIntuneWin32Apps/remediateIntuneWin32Apps.ps1)**: Cleans up Win32 app registry and restarts IntuneManagementExtension
 
 ## 🔧 Usage
 
@@ -133,28 +70,36 @@ Most scripts include detailed help information. Use PowerShell's Get-Help for de
 Get-Help .\ScriptName.ps1 -Full
 ```
 
-Example for AADChecker:
+
+Example for detection:
 ```powershell
-.\AddAADDeviceToAADGroup\AADChecker.ps1
+.\DetectRuntime6.ps1
+.\Remediations\detectOfficeUpdates.ps1
+.\Remediations\remediatOfficeUpdates.ps1
+.\Remediations\Intune-SyncDevice\Detection.ps1
+.\Remediations\Intune-SyncDevice\Remediation.ps1
 ```
 
 ## 📊 Usage Examples
 
+
 ```powershell
-# Add devices to AAD group using GUI
-.\DevicetoAADGroupGUI.ps1
+# Detect .NET 6 Runtime
+.\DetectRuntime6.ps1
 
-# Add devices using function
-$result = Add-DevicesToAADGroup -GroupName "TestGroup" -CsvPath ".\Devices.csv"
+# Update drivers
+.\DriverUpdate.ps1
 
-# Check AAD device status
-.\AADChecker.ps1 -InputFile "devices.csv"
+# Reset Windows Update
+.\REP_WindowsUpdate.ps1
 
-# Detect missing Office updates
+# Detect/Remediate Office Updates
 .\Remediations\detectOfficeUpdates.ps1
-
-# Remediate missing Office updates
 .\Remediations\remediatOfficeUpdates.ps1
+
+# Intune Win32 App Remediation
+.\Remediations\RepairIntuneWin32Apps\detectIntuneWin32Apps.ps1
+.\Remediations\RepairIntuneWin32Apps\remediateIntuneWin32Apps.ps1
 ```
 
 ## 📝 Logging
