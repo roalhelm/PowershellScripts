@@ -1,31 +1,42 @@
 
-#region PowerShell Help
+#
 <#
 .SYNOPSIS
-    Remediation script for Windows Update error 0Xc1900200, checking system requirements and logging results.
+    Remediation script for Windows Update error 0Xc1900200, checking system requirements and resetting update components.
 
-    GitHub Repository: https://github.com/roalhelm/
+    GitHub Repository: https://github.com/roalhelm/PowershellScripts
 
 .DESCRIPTION
-    This script checks for TPM activation, Secure Boot status, and available disk space, and logs the results. It is designed to help remediate Windows Update error 0Xc1900200 on Intune-managed devices. The script also runs a DISM health scan and logs all actions to a specified log file.
+    This script checks for TPM activation, Secure Boot status, and available disk space, and logs the results. It is designed to help remediate Windows Update error 0Xc1900200 on Intune-managed devices. The script also resets Windows Update components, checks for setup block registry values, and logs all actions to a specified log file. Optionally, DISM health scan steps are included (commented).
 
 .NOTES
-    File Name     : remediation.ps1
+    File Name     : remediationSTEP2.ps1
     Author        : Ronny Alhelm
-    Version       : 1.0
-    Creation Date : 2025-09-19
+    Version       : 1.1
+    Creation Date : October 13, 2025
+    Requirements  : PowerShell 5.1 or higher, local admin rights
+    Target Use    : Intune remediation for Windows Update errors
 
 .CHANGES
-    1.0 - Initial version
+    Version 1.1 (2025-10-13):
+    - Enhanced documentation and header
+    - Improved output formatting and error handling
+    - Updated for Intune proactive remediation workflows
+    Version 1.0 (2025-09-19):
+    - Initial version
 
 .VERSION
-    1.0
+    1.1
 
 .EXAMPLE
-    powershell.exe -ExecutionPolicy Bypass -File .\remediation.ps1
-    # Runs the remediation script to check system requirements and log results for Windows Update remediation.
+    powershell.exe -ExecutionPolicy Bypass -File .\remediationSTEP2.ps1
+    # Runs the remediation script to check system requirements, reset update components, and log results for Windows Update remediation.
+
+.EXAMPLE
+    .\remediationSTEP2.ps1
+    # Use in Intune proactive remediation to resolve Windows Update error 0Xc1900200 on managed devices.
+
 #>
-#endregion
 
 # PowerShell Remediation Script for Windows Update Error 0Xc1900200
 

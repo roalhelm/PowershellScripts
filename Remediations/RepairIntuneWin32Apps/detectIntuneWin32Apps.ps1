@@ -1,23 +1,52 @@
+
 <#
 .SYNOPSIS
-    Detects failed or not detected Win32 app installations by scanning the AppWorkload.log.
-    GitHub Repository: https://github.com/roalhelm/
+    Intune detection script for failed or not detected Win32 app installations (AppWorkload.log analysis).
+
+    GitHub Repository: https://github.com/roalhelm/PowershellScripts
 
 .DESCRIPTION
-    This script analyzes the AppWorkload.log for patterns indicating failed or not detected Win32 app installations.
-    It returns exit code 1 if any issues are found, otherwise exit code 0.
+    This script scans the Intune Management Extension AppWorkload.log for patterns indicating failed or not detected Win32 app installations.
+    It is designed for use as an Intune proactive remediation detection script and returns:
+    - Exit code 1 if any issues are found (non-compliant)
+    - Exit code 0 if no issues are found (compliant)
+
+    The script checks log entries from the last 10 days and outputs details about any detected issues, including app name or policy ID if available.
 
 .NOTES
-    File Name      : detectIntuneWin32Apps.ps1
-    Author         : Ronny Alhelm
-    Prerequisite   : PowerShell 5.1 or higher
-    Version        : 1.0
-    Creation Date  : 2025-09-05
+    File Name     : detectIntuneWin32Apps.ps1
+    Author        : Ronny Alhelm
+    Version       : 1.3
+    Creation Date : October 13, 2025
+    Requirements  : PowerShell 5.1 or higher
+    Target Use    : Intune proactive remediation detection for Win32 app deployment
 
-# CHANGELOG
-#   1.2 (2025-09-12) - Output now includes app name or policyId and error type if available; all comments in English
-#   1.1 (2025-09-12) - Only checks log entries from the last 10 days
-#   1.0 (2025-09-05) - Initial release
+.CHANGES
+    Version 1.3 (2025-10-13):
+    - Enhanced documentation and header
+    - Improved pattern matching and output formatting
+    - Updated for Intune proactive remediation workflows
+    Version 1.2 (2025-09-12):
+    - Output now includes app name or policyId and error type if available; all comments in English
+    Version 1.1 (2025-09-12):
+    - Only checks log entries from the last 10 days
+    Version 1.0 (2025-09-05):
+    - Initial release
+
+.VERSION
+    1.3
+
+.EXAMPLE
+    .\detectIntuneWin32Apps.ps1
+    # Checks AppWorkload.log for failed or not detected Win32 app installations in the last 10 days.
+    # Returns exit code 1 if issues are found, otherwise exit code 0.
+
+.EXAMPLE
+    # Use in Intune proactive remediation:
+    # Detection script: detectIntuneWin32Apps.ps1
+    # Remediation script: remediateIntuneWin32Apps.ps1
+    # Run as system or user context as required.
+
 #>
 
 # Intune Detection Script: Checks AppWorkload.log for failed or not detected Win32 app installations

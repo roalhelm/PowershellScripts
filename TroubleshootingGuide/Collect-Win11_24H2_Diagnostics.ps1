@@ -1,41 +1,112 @@
 <#
 .SYNOPSIS
-Collects diagnostic information relevant to Windows 11 24H2 Feature Update troubleshooting (Intune-managed devices).
+    Comprehensive diagnostic data collector for Windows 11 24H2 Feature Update troubleshooting in Intune-managed environments.
+
+    GitHub Repository: https://github.com/roalhelm/PowershellScripts
 
 .DESCRIPTION
-Performs hardware prerequisite checks, Intune / Update policy indicators, Windows Update state, driver summary,
-AV status, disk space, pending reboot, integrity checks (optional), and gathers key logs into an output folder.
-
-.OUTPUTS
-Creates a timestamped folder (default: .\Win11_24H2_Diagnostics_yyyyMMdd_HHmmss) containing:
- - Summary.txt (human readable consolidated report)
- - Raw subfolder with individual section logs (each .log/.txt)
- - Collected log copies (WindowsUpdate.log if generated, Panther logs if present)
- - Optional ZIP archive if -ZipOutput is used
-
-.PARAMETER OutputPath
-Base path where the diagnostic folder will be created. Defaults to current directory.
-
-.PARAMETER IncludeSfcDism
-Runs sfc /scannow and DISM /RestoreHealth (can take time). Captured to IntegrityChecks.log.
-
-.PARAMETER GenerateWindowsUpdateLog
-Calls Get-WindowsUpdateLog to materialize WindowsUpdate.log into the diagnostics folder.
-
-.PARAMETER SkipDrivers
-Skips extended driver enumeration (faster on some systems).
-
-.PARAMETER ZipOutput
-Creates a ZIP file of the final folder.
-
-.PARAMETER Quiet
-Minimizes console output (only high-level progress + final path).
-
-.EXAMPLE
-PS> .\Collect-Win11_24H2_Diagnostics.ps1 -IncludeSfcDism -GenerateWindowsUpdateLog -ZipOutput
+    This comprehensive diagnostic script collects critical system information to troubleshoot Windows 11 24H2 
+    Feature Update deployment issues, particularly in Microsoft Intune-managed enterprise environments.
+    
+    The script performs extensive system analysis including:
+    1. Hardware and firmware prerequisite validation (TPM, SecureBoot, UEFI)
+    2. Intune enrollment status and device management state
+    3. Windows Update for Business (WUfB) policy configuration analysis
+    4. Update history, hotfixes, and patch deployment status
+    5. Disk space analysis and storage requirements validation
+    6. Driver compatibility assessment and version analysis
+    7. Microsoft Defender antivirus status and security state
+    8. Pending reboot detection and system state analysis
+    9. Optional system integrity checks (SFC/DISM scans)
+    10. Windows Update service logs and delivery optimization status
+    11. Setup and deployment log collection from Panther directory
+    12. Running process analysis for update-related services
+    
+    All diagnostic data is organized into a timestamped folder structure with both raw data files
+    and a consolidated human-readable summary report for efficient troubleshooting workflows.
 
 .NOTES
-Run in elevated PowerShell for best results. Does not modify system state (except optional integrity scans).
+    File Name     : Collect-Win11_24H2_Diagnostics.ps1
+    Author        : Ronny Alhelm
+    Version       : 1.0
+    Creation Date : October 13, 2025
+    Requirements  : PowerShell 5.1 or higher
+    Permissions   : Elevated PowerShell recommended for complete data collection
+    Compatibility : Windows 10 version 1909+ and Windows 11 (all versions)
+    Target Use    : Windows 11 24H2 Feature Update troubleshooting
+
+.CHANGES
+    Version 1.0 (2025-10-13):
+    - Initial release with comprehensive diagnostic collection
+    - Added hardware prerequisite validation (TPM, SecureBoot, UEFI)
+    - Implemented Intune enrollment status detection
+    - Added Windows Update for Business policy analysis
+    - Included driver compatibility assessment
+    - Added Microsoft Defender status monitoring
+    - Implemented pending reboot detection
+    - Added optional system integrity checks (SFC/DISM)
+    - Included Windows Update log generation
+    - Added Panther setup log collection
+    - Implemented delivery optimization status analysis
+    - Added process monitoring for update services
+    - Created structured output with summary reporting
+    - Added ZIP compression option for easy sharing
+
+.VERSION
+    1.0
+
+.EXAMPLE
+    .\Collect-Win11_24H2_Diagnostics.ps1
+    Performs basic diagnostic collection with hardware checks, Intune status, policies, and system state.
+    Creates a timestamped folder with all diagnostic data.
+
+.EXAMPLE
+    .\Collect-Win11_24H2_Diagnostics.ps1 -IncludeSfcDism -GenerateWindowsUpdateLog -ZipOutput
+    Comprehensive diagnostic collection including system integrity scans, Windows Update log generation,
+    and ZIP compression of results for easy sharing with support teams.
+
+.EXAMPLE
+    .\Collect-Win11_24H2_Diagnostics.ps1 -OutputPath "C:\Diagnostics" -Quiet -ZipOutput
+    Runs diagnostic collection with minimal console output, saves to custom location,
+    and creates compressed archive for enterprise support workflows.
+
+.EXAMPLE
+    .\Collect-Win11_24H2_Diagnostics.ps1 -SkipDrivers -Quiet
+    Quick diagnostic run skipping driver enumeration for faster execution on systems
+    with many installed drivers or in time-sensitive troubleshooting scenarios.
+
+.PARAMETER OutputPath
+    Base directory path where the diagnostic folder will be created. 
+    Defaults to current working directory if not specified.
+
+.PARAMETER IncludeSfcDism
+    Executes system file checker (sfc /scannow) and DISM restore health operations.
+    WARNING: These operations can take 15-30 minutes to complete.
+
+.PARAMETER GenerateWindowsUpdateLog
+    Creates consolidated Windows Update log file using Get-WindowsUpdateLog cmdlet.
+    Useful for detailed update service troubleshooting.
+
+.PARAMETER SkipDrivers
+    Bypasses driver enumeration and analysis to speed up execution.
+    Recommended for systems with extensive driver installations.
+
+.PARAMETER ZipOutput
+    Creates compressed ZIP archive of the complete diagnostic folder.
+    Facilitates easy sharing with support teams or remote analysis.
+
+.PARAMETER Quiet
+    Suppresses detailed console output, showing only essential progress information.
+    Ideal for automated execution or batch processing scenarios.
+
+.OUTPUTS
+    Creates timestamped diagnostic folder containing:
+    - Summary.txt: Consolidated human-readable diagnostic report
+    - Raw/: Subfolder with individual diagnostic section files (.log/.txt)
+    - WindowsUpdate.log: Consolidated update service log (if -GenerateWindowsUpdateLog used)
+    - setupact.log, setuperr.log: Setup logs from Panther directory (if available)
+    - Optional ZIP archive of complete diagnostic data (if -ZipOutput used)
+
 #>
 [CmdletBinding()] param(
     [string]$OutputPath = (Get-Location).Path,

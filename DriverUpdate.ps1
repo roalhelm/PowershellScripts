@@ -1,35 +1,59 @@
 <#
 .SYNOPSIS
-    Updates drivers and firmware on Windows devices using native Windows methods.
-    GitHub Repository: https://github.com/roalhelm/
+    Updates drivers and firmware on Windows devices using native Windows methods and PSWindowsUpdate module.
 
-.CHANGES
-    Version 1.1 (2025-03-20):
-    - Added remote update capability with -Remote switch parameter
-    - Enhanced BitLocker handling with automatic suspension
-    - Improved logging with detailed update information
-    - Added size information for updates in MB
-
-    Version 1.0 (2025-03-18):
-    - Initial release
-    - Basic driver update functionality
-    - Windows Update integration
-    - Basic logging implementation
-    - BitLocker status checking
+    GitHub Repository: https://github.com/roalhelm/PowershellScripts
 
 .DESCRIPTION
-    This script:
-    1. Checks for available driver updates using Windows Update
-    2. Downloads and installs driver updates
-    3. Logs all actions and results
-    4. Handles errors and BitLocker status
+    This script automates the process of updating device drivers on Windows systems by:
+    1. Checking for available driver updates using Windows Update services
+    2. Automatically installing the PSWindowsUpdate module if not present
+    3. Downloading and installing driver updates with detailed logging
+    4. Handling BitLocker protection by temporarily suspending it during updates
+    5. Providing comprehensive error handling and status reporting
+    6. Supporting both interactive and remote execution modes
+    
+    The script requires administrator privileges and logs all activities to a central log file
+    for auditing and troubleshooting purposes.
 
 .NOTES
-    File Name      : DriverUpdate.ps1
-    Author         : Ronny Alhelm
-    Prerequisite   : PowerShell 5.1 or higher, Admin rights
-    Version        : 1.0
-    Creation Date  : 2025-03-18
+    File Name     : DriverUpdate.ps1
+    Author        : Ronny Alhelm
+    Version       : 1.1
+    Creation Date : October 13, 2025
+    Prerequisite  : PowerShell 5.1 or higher, Administrator rights
+    Dependencies  : PSWindowsUpdate module (auto-installed)
+
+.CHANGES
+    Version 1.1 (2025-10-13):
+    - Updated documentation structure and formatting
+    - Enhanced error handling and logging details
+    - Improved BitLocker handling with better error reporting
+    - Added detailed update information display (size in MB)
+    - Enhanced remote execution capabilities
+
+    Version 1.0 (2025-03-18):
+    - Initial release with core functionality
+    - Basic driver update functionality via Windows Update
+    - PSWindowsUpdate module integration
+    - BitLocker status checking and suspension
+    - Comprehensive logging implementation
+
+.VERSION
+    1.1
+
+.EXAMPLE
+    .\DriverUpdate.ps1
+    Runs the driver update process interactively, prompting user for confirmation before installing updates.
+
+.EXAMPLE
+    .\DriverUpdate.ps1 -Remote
+    Runs the driver update process in remote/automated mode without user interaction.
+
+.EXAMPLE
+    # Schedule as a task for automated driver updates
+    schtasks /create /tn "Driver Update" /tr "powershell.exe -ExecutionPolicy Bypass -File 'C:\Scripts\DriverUpdate.ps1' -Remote" /sc weekly /d sun /st 02:00
+
 #>
 
 # Add parameter block at the beginning of the script

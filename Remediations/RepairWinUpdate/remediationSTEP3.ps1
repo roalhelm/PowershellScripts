@@ -1,30 +1,40 @@
-#region PowerShell Help
 <#
 .SYNOPSIS
-    Erweiterte Remediation für Windows Update-Probleme, setzt Update-bezogene Registry-Werte zurück, startet Dienste neu und erstellt Diagnoselogs.
+    Advanced remediation script for Windows Update issues: resets registry, restarts services, registers DLLs, resets WinSock, and creates diagnostic logs.
 
-    GitHub Repository: https://github.com/roalhelm/
+    GitHub Repository: https://github.com/roalhelm/PowershellScripts
 
 .DESCRIPTION
-    Dieses Skript setzt verschiedene Windows Update- und Telemetrie-Registry-Werte zurück, startet relevante Dienste neu, registriert System-DLLs, setzt WinSock zurück und erstellt abschließend Diagnoselogs. Es ist für Intune-Remediation-Szenarien konzipiert und loggt alle Aktionen in eine Logdatei.
+    This script performs a comprehensive remediation for Windows Update problems on Intune-managed devices. It resets various Windows Update and telemetry registry values, restarts relevant services, registers system DLLs, resets WinSock, and creates diagnostic logs using SetupDiag. All actions are logged to a specified log file. Designed for use in Intune proactive remediation scenarios.
 
 .NOTES
-    File Name     : remediationV2.ps1
+    File Name     : remediationSTEP3.ps1
     Author        : Ronny Alhelm
-    Version       : 1.0
-    Creation Date : 2025-09-19
+    Version       : 1.1
+    Creation Date : October 13, 2025
+    Requirements  : PowerShell 5.1 or higher, local admin rights
+    Target Use    : Intune remediation for advanced Windows Update errors
 
 .CHANGES
-    1.0 - Initialversion
+    Version 1.1 (2025-10-13):
+    - Enhanced documentation and header
+    - Improved output formatting and error handling
+    - Updated for Intune proactive remediation workflows
+    Version 1.0 (2025-09-19):
+    - Initial version
 
 .VERSION
-    1.0
+    1.1
 
 .EXAMPLE
-    powershell.exe -ExecutionPolicy Bypass -File .\remediationV2.ps1
-    # Führt die vollständige Remediation für Windows Update durch und erstellt Diagnoselogs.
+    powershell.exe -ExecutionPolicy Bypass -File .\remediationSTEP3.ps1
+    # Runs the advanced remediation script for Windows Update and creates diagnostic logs.
+
+.EXAMPLE
+    .\remediationSTEP3.ps1
+    # Use in Intune proactive remediation to resolve persistent Windows Update issues on managed devices.
+
 #>
-#endregion
 <#
     This script logs all output to C:\ProgramData\Microsoft\IntuneManagementExtension\Logs\RepairWinUpdate_remediationV2.log
 #>

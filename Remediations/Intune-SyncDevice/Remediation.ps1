@@ -36,11 +36,27 @@
     # Returns error message and exits with code 1 if sync fails
 #>
 
+
+$taskName = 'PushLaunch'
+$task = Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue
+if ($null -eq $task) {
+    Write-Error "Scheduled task '$taskName' does not exist. Intune sync cannot be triggered."
+    Exit 1
+}
+
 try {
-    Get-ScheduledTask | ? {$_.TaskName -eq 'PushLaunch'} | Start-ScheduledTask
-    Exit 0
+    Start-ScheduledTask -TaskName $taskName -ErrorAction Stop
+    Start-Sleep -Seconds 2
+    $taskState = (Get-ScheduledTask -TaskName $taskName).State
+    if ($taskState -eq 'Running' -or $taskState -eq 'Ready') {
+        Write-Output "Intune sync triggered successfully via '$taskName' (State: $taskState)."
+        Exit 0
+    } else {
+        Write-Error "Scheduled task '$taskName' did not start as expected (State: $taskState)."
+        Exit 1
+    }
 }
 catch {
-    Write-Error $_
+    Write-Error "Failed to start scheduled task '$taskName': $_"
     Exit 1
 }
