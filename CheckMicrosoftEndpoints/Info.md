@@ -480,29 +480,29 @@ New-NetFirewallRule -DisplayName "Microsoft Services HTTPS" -Direction Outbound 
 
 ---
 
-## ⚠️ Kritikalitätsbewertung der Microsoft Services
+## ⚠️ Microsoft Services Criticality Assessment
 
-| Service | Zweck der Endpoints | Kritikalität | Business Impact bei Ausfall |
-|---------|-------------------|--------------|----------------------------|
-| **Windows Update for Business** | Update-Download, Katalog-Sync, CDN-Zugriff | 🔴 **Kritisch** | Keine Sicherheitsupdates, System-Vulnerabilities |
-| **Microsoft Intune** | Device Management, Policy Sync, App Deployment | 🔴 **Kritisch** | Kein MDM, Compliance-Verlust, App-Installationen fehlgeschlagen |
-| **Azure Active Directory** | Authentication, Token-Erneuerung, Device Registration | 🔴 **Kritisch** | Login-Probleme, SSO funktioniert nicht, Geräte-Registrierung blockiert |
-| **Microsoft Defender** | Threat Intelligence, Cloud Protection, Definition Updates | 🟠 **Hoch** | Veraltete Antivirus-Signaturen, eingeschränkter Malware-Schutz |
-| **Windows Autopatch** | Automatische Patch-Verwaltung, Update-Orchestrierung | 🟠 **Hoch** | Manuelle Update-Verwaltung erforderlich, keine automatischen Deployments |
-| **Microsoft 365** | Office Apps, OneDrive Sync, SharePoint-Zugriff | 🟠 **Hoch** | Office-Apps eingeschränkt, Sync-Probleme, Produktivitätsverlust |
-| **Windows Activation** | Lizenz-Validierung, KMS-Services, Digital License | 🟡 **Mittel** | Aktivierungsprobleme bei Neuinstallationen, Lizenz-Warnungen |
-| **Microsoft Store** | App Downloads, Updates, Deployment | 🟡 **Mittel** | Store-Apps installieren nicht, Update-Probleme bei Store-Apps |
-| **Microsoft Edge** | Browser-Updates, SmartScreen, Enterprise-Services | 🟡 **Mittel** | Browser-Updates fehlgeschlagen, eingeschränkte Security-Features |
-| **Windows Telemetry** | Diagnose-Daten, Fehlerberichte, Analytics | 🟢 **Niedrig** | Keine Auswirkung auf Funktionalität, nur Diagnose-Daten betroffen |
+| Service | Endpoint Purpose | Criticality | Business Impact on Failure |
+|---------|------------------|-------------|---------------------------|
+| **Windows Update for Business** | Update Downloads, Catalog Sync, CDN Access | 🔴 **Critical** | No security updates, system vulnerabilities |
+| **Microsoft Intune** | Device Management, Policy Sync, App Deployment | 🔴 **Critical** | No MDM, compliance loss, app installations fail |
+| **Azure Active Directory** | Authentication, Token Renewal, Device Registration | 🔴 **Critical** | Login issues, SSO failure, device registration blocked |
+| **Microsoft Defender** | Threat Intelligence, Cloud Protection, Definition Updates | 🟠 **High** | Outdated antivirus signatures, limited malware protection |
+| **Windows Autopatch** | Automatic Patch Management, Update Orchestration | 🟠 **High** | Manual update management required, no automated deployments |
+| **Microsoft 365** | Office Apps, OneDrive Sync, SharePoint Access | 🟠 **High** | Office apps limited, sync issues, productivity loss |
+| **Windows Activation** | License Validation, KMS Services, Digital License | 🟡 **Medium** | Activation issues on fresh installs, license warnings |
+| **Microsoft Store** | App Downloads, Updates, Deployment | 🟡 **Medium** | Store apps won't install, update issues with Store apps |
+| **Microsoft Edge** | Browser Updates, SmartScreen, Enterprise Services | 🟡 **Medium** | Browser updates fail, limited security features |
+| **Windows Telemetry** | Diagnostic Data, Error Reports, Analytics | 🟢 **Low** | No functional impact, only diagnostic data affected |
 
-### 🎯 Kritikalitäts-Legende
+### 🎯 Criticality Legend
 
-| Symbol | Level | Ausfalltoleranz | Handlungsbedarf |
-|--------|-------|----------------|-----------------|
-| 🔴 **Kritisch** | System-essential | < 1 Stunde | Sofortiger Fix erforderlich |
-| 🟠 **Hoch** | Business-critical | < 4 Stunden | Prioritäre Behandlung |
-| 🟡 **Mittel** | Functionality-impact | < 24 Stunden | Geplante Behebung |
-| 🟢 **Niedrig** | Optional/Analytics | > 24 Stunden | Bei Gelegenheit beheben |
+| Symbol | Level | Downtime Tolerance | Action Required |
+|--------|-------|-------------------|-----------------|
+| 🔴 **Critical** | System-essential | < 1 Hour | Immediate fix required |
+| 🟠 **High** | Business-critical | < 4 Hours | Priority treatment |
+| 🟡 **Medium** | Functionality-impact | < 24 Hours | Planned remediation |
+| 🟢 **Low** | Optional/Analytics | > 24 Hours | Fix when convenient |
 
 ---
 

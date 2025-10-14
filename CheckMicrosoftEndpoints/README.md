@@ -39,7 +39,6 @@ cd PowershellScripts
 | **Betriebssystem** | Windows 10/11, Windows Server 2016+ |
 | **Module** | PSWindowsUpdate, Microsoft.Graph, ActiveDirectory |
 
-
 ---
 
 ## 🏆 Featured Script: Microsoft Endpoint Connectivity Tester V2.1
