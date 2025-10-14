@@ -39,10 +39,6 @@ cd PowershellScripts
 | **Betriebssystem** | Windows 10/11, Windows Server 2016+ |
 | **Module** | PSWindowsUpdate, Microsoft.Graph, ActiveDirectory |
 
-### Erforderliche PowerShell-Module installieren:
-```powershell
-Install-Module PSWindowsUpdate, Microsoft.Graph, ActiveDirectory -Force -AllowClobber
-```
 
 ---
 
