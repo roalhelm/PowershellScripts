@@ -11,10 +11,6 @@ Eine umfassende Sammlung von PowerShell-Skripten für Systemadministration, Micr
 ## 🌟 Highlights
 
 - **🔌 Microsoft Endpoint Connectivity Tester V2.1** - Erweiterte Konnektivitäts-, Latenz- und Performance-Tests mit HTML-Reports
-- **🔄 Intune Management & Remediation** - Komplette Suite für Intune-Verwaltung und Problembehandlung
-- **📊 Automatisierte Berichte** - Professionelle HTML-Reports mit responsivem Design
-- **🎯 Selektive Tests** - Wählen Sie spezifische Services für gezielte Überprüfungen
-- **⚡ Performance-Optimiert** - Konfigurierbare Tests für schnelle oder umfassende Analysen
 
 ---
 
@@ -89,104 +85,6 @@ Install-Module PSWindowsUpdate, Microsoft.Graph, ActiveDirectory -Force -AllowCl
 
 ---
 
-## 📦 Vollständige Script-Übersicht
-
-### 🌐 Netzwerk & Konnektivität
-| Script | Beschreibung | Version | Features |
-|--------|-------------|---------|----------|
-| **[CheckMicrosoftEndpointsV2.ps1](CheckMicrosoftEndpointsV2.ps1)** | 🏆 **Erweiterte Microsoft Endpoint Tests** | v2.1 | HTML-Reports, Service-Auswahl, Performance-Tests |
-| **[CheckMicrosoftEndpointsV1.ps1](CheckMicrosoftEndpointsV1.ps1)** | Basis Microsoft Endpoint Tests | v1.1 | Konnektivität, Ping, Geschwindigkeit |
-
-### 🔧 System & Updates
-| Script | Beschreibung | Zweck |
-|--------|-------------|-------|
-| **[DetectRuntime6.ps1](DetectRuntime6.ps1)** | .NET Desktop Runtime 6 Detection | Intune Detection |
-| **[DriverUpdate.ps1](DriverUpdate.ps1)** | System-Treiber Updates | BitLocker-aware Updates |
-| **[REP_WindowsUpdate.ps1](REP_WindowsUpdate.ps1)** | Windows Update Reset | Component-Reparatur |
-| **[UnblockFiles.ps1](UnblockFiles.ps1)** | Datei-Entsperrung | Security Zone Removal |
-
-### 🔄 Intune & MDM Management
-| Script | Kategorie | Beschreibung |
-|--------|-----------|-------------|
-| **[PSrepairIntuneManagementextention.ps1](PSrepairIntuneManagementextention.ps1)** | Repair | Intune Management Extension Reparatur |
-| **[ReinstallCompanyPortal.ps1](ReinstallCompanyPortal.ps1)** | Reinstall | Company Portal via WinGet |
-
-### 👥 Benutzer & Gruppen
-| Script | Zweck | Features |
-|--------|-------|----------|
-| **[ADCompareUserGroups.ps1](ADCompareUserGroups.ps1)** | AD Gruppenmitgliedschaften vergleichen | Side-by-side Vergleich |
-| **[IntuneCompareUser/IntuneCompareUser.ps1](IntuneCompareUser/IntuneCompareUser.ps1)** | Entra ID Benutzervergleich | Multi-User Analyse |
-
-### 🎯 AAD/Entra ID Device Management
-| Script | Beschreibung | Use Case |
-|--------|-------------|----------|
-| **[Add-DevicetoAADGroup/AADChecker.ps1](Add-DevicetoAADGroup/AADChecker.ps1)** | Azure AD Verbindung prüfen | Pre-flight Checks |
-| **[Add-DevicetoAADGroup/Add-DevicesToAADGroupFunction.ps1](Add-DevicetoAADGroup/Add-DevicesToAADGroupFunction.ps1)** | Bulk-Device zu Gruppe hinzufügen | Automation Function |
-| **[Add-DevicetoAADGroup/AddAADDeviceToAADGroup.ps1](Add-DevicetoAADGroup/AddAADDeviceToAADGroup.ps1)** | Einzelnes Gerät zu Gruppe | Manual Assignment |
-| **[Add-DevicetoAADGroup/AddDeviceCSV.ps1](Add-DevicetoAADGroup/AddDeviceCSV.ps1)** | CSV-basierte Device-Zuweisung | Bulk Operations |
-
-### 🔄 Graph API & Remote Operations
-| Script | API/Service | Funktion |
-|--------|-------------|----------|
-| **[GraphApiOdataNextLink.ps1](GraphApiOdataNextLink.ps1)** | Microsoft Graph | Paging für große Datensätze |
-| **[ExecuteRemoteScript.ps1](ExecuteRemoteScript.ps1)** | PSRemoting | Multi-Server Script Execution |
-| **[PSrepairWMI.ps1](PSrepairWMI.ps1)** | WMI | Local/Remote WMI Repository Repair |
-
----
-
-## 🏥 Remediation Scripts (Intune/SCCM/GPO)
-
-### 🛡️ Microsoft Defender
-| Detection | Remediation | Zweck |
-|-----------|-------------|--------|
-| **[detectDefenderSignatur.txt](Remediations/detectDefenderSignatur.txt)** | - | Signature Aktualität |
-
-### 🏢 Dell Management
-| Detection | Remediation | Zweck |
-|-----------|-------------|--------|
-| **[detectDellCommandUpdate.ps1](Remediations/detectDellCommandUpdate.ps1)** | **[remediatDellCommandUpdate.ps1](Remediations/remediatDellCommandUpdate.ps1)** | Dell Command Update Verwaltung |
-
-### 📋 Microsoft Office
-| Detection | Remediation | Zweck |
-|-----------|-------------|--------|
-| **[detectOfficeUpdates.ps1](Remediations/remediatOfficeUpdates/detectOfficeUpdates.ps1)** | **[remediatOfficeUpdates.ps1](Remediations/remediatOfficeUpdates/remediatOfficeUpdates.ps1)** | Office Update Management |
-
-### 📱 Intune Device Sync
-| Detection | Remediation | Zweck |
-|-----------|-------------|--------|
-| **[Detection.ps1](Remediations/Intune-SyncDevice/Detection.ps1)** | **[Remediation.ps1](Remediations/Intune-SyncDevice/Remediation.ps1)** | Intune Sync erzwingen |
-
-### 📦 Intune Win32 Apps
-| Script | Zweck | Features |
-|--------|--------|----------|
-| **[CheckLastSync.ps1](Remediations/RepairIntuneWin32Apps/CheckLastSync.ps1)** | Sync-Trigger für alle Geräte | Bulk Operations |
-| **[detectIntuneWin32Apps.ps1](Remediations/RepairIntuneWin32Apps/detectIntuneWin32Apps.ps1)** | Win32 App Fehler-Detection | Registry-Analyse |
-| **[remediateIntuneWin32Apps.ps1](Remediations/RepairIntuneWin32Apps/remediateIntuneWin32Apps.ps1)** | Win32 App Reparatur | IME Restart, Registry Cleanup |
-
-### 🔄 Windows Update Repair (3-Stufen-Prozess)
-| Stufe | Detection | Remediation | Zweck |
-|-------|-----------|-------------|--------|
-| **1** | **[detectSTEP1.ps1](Remediations/RepairWinUpdate/detectSTEP1.ps1)** | **[remediationSTEP1.ps1](Remediations/RepairWinUpdate/remediationSTEP1.ps1)** | Windows Update Service Reset |
-| **2** | **[detectSTEP2.ps1](Remediations/RepairWinUpdate/detectSTEP2.ps1)** | **[remediationSTEP2.ps1](Remediations/RepairWinUpdate/remediationSTEP2.ps1)** | SoftwareDistribution Reset |
-| **3** | **[detectSTEP3.ps1](Remediations/RepairWinUpdate/detectSTEP3.ps1)** | **[remediationSTEP3.ps1](Remediations/RepairWinUpdate/remediationSTEP3.ps1)** | Component Store Repair |
-| **All** | **[detection.ps1](Remediations/RepairWinUpdate/detection.ps1)** | - | Gesamtstatus-Check |
-
----
-
-## 🔍 Troubleshooting & Diagnostics
-
-### 🪟 Windows 11 24H2 Diagnostics
-| Script | Zweck | Sammelt |
-|--------|--------|---------|
-| **[Collect-Win11_24H2_Diagnostics.ps1](TroubleshootingGuide/Collect-Win11_24H2_Diagnostics.ps1)** | Windows 11 24H2 Problemdiagnose | System-Logs, Configs, Hardware-Info |
-
-### 📖 Documentation
-| Datei | Inhalt |
-|-------|--------|
-| **[TroubleshootingGuide.md](TroubleshootingGuide/TroubleshootingGuide.md)** | Umfassende Troubleshooting-Anleitung |
-
----
-
 ## 🎨 HTML-Report Features (CheckMicrosoftEndpointsV2.ps1)
 
 ### 📊 Dashboard-Übersicht
@@ -220,26 +118,12 @@ Install-Module PSWindowsUpdate, Microsoft.Graph, ActiveDirectory -Force -AllowCl
 # Morgendlicher Netzwerk-Check mit Report
 .\CheckMicrosoftEndpointsV2.ps1 -Services All -HtmlReport "Daily-$(Get-Date -Format 'yyyy-MM-dd').html" -OpenReport
 
-# Intune-Probleme diagnostizieren
-.\Remediations\RepairIntuneWin32Apps\detectIntuneWin32Apps.ps1
-.\PSrepairIntuneManagementextention.ps1
-
-# Windows Update Probleme beheben
-.\REP_WindowsUpdate.ps1
-.\Remediations\RepairWinUpdate\detection.ps1
 ```
 
 ### 🚀 Deployment-Vorbereitung
 ```powershell
 # Pre-Deployment Netzwerk-Validierung
 .\CheckMicrosoftEndpointsV2.ps1 -Services WindowsUpdate,Intune,AzureAD -HtmlReport "Pre-Deployment-Check.html"
-
-# Bulk Device Management
-.\Add-DevicetoAADGroup\AddDeviceCSV.ps1
-
-# System-Vorbereitung
-.\DetectRuntime6.ps1
-.\DriverUpdate.ps1
 ```
 
 ### 📊 Monitoring & Reporting
@@ -266,18 +150,6 @@ Install-Module PSWindowsUpdate, Microsoft.Graph, ActiveDirectory -Force -AllowCl
 -Quiet           # Stiller Modus (für Automation)
 -HtmlReport      # Pfad für HTML-Report
 -OpenReport      # Report automatisch im Browser öffnen
-```
-
-### 📁 Empfohlene Verzeichnisstruktur
-```
-C:\Scripts\PowershellScripts\
-├── CheckMicrosoftEndpointsV2.ps1
-├── Reports\
-│   ├── Daily\
-│   ├── Weekly\
-│   └── Incident\
-├── Logs\
-└── Config\
 ```
 
 ---
@@ -313,36 +185,6 @@ C:\Scripts\PowershellScripts\
 
 ---
 
-## 🛠️ Installation & Setup
-
-### 1️⃣ Repository Setup
-```powershell
-# Repository klonen
-git clone https://github.com/roalhelm/PowershellScripts.git
-cd PowershellScripts
-
-# Execution Policy setzen (falls nötig)
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-```
-
-### 2️⃣ Abhängigkeiten installieren
-```powershell
-# PowerShell Module installieren
-Install-Module PSWindowsUpdate, Microsoft.Graph, ActiveDirectory -Force
-
-# Graph API Berechtigung (für Intune/Azure Scripts)
-Connect-MgGraph -Scopes "Device.Read.All", "Group.ReadWrite.All"
-```
-
-### 3️⃣ Erste Tests
-```powershell
-# Basis-Funktionalität testen
-.\CheckMicrosoftEndpointsV2.ps1 -Services WindowsUpdate -SkipPing -SkipSpeed
-
-# Vollständigen Test mit Report
-.\CheckMicrosoftEndpointsV2.ps1 -Services All -HtmlReport "FirstTest.html" -OpenReport
-```
-
 ---
 
 ## 🔒 Security & Permissions
@@ -369,18 +211,12 @@ Connect-MgGraph -Scopes "Device.Read.All", "Group.ReadWrite.All"
 ```powershell
 # Detaillierte Hilfe anzeigen
 Get-Help .\CheckMicrosoftEndpointsV2.ps1 -Full
-Get-Help .\PSrepairIntuneManagementextention.ps1 -Examples
+
 
 # Parameter-Informationen
 Get-Help .\CheckMicrosoftEndpointsV2.ps1 -Parameter Services
 ```
 
-### 🔍 Troubleshooting-Ressourcen
-- **[TroubleshootingGuide.md](TroubleshootingGuide/TroubleshootingGuide.md)** - Umfassende Problemlösung
-- **Script-Comments** - Inline-Dokumentation in jedem Script
-- **Error Handling** - Detaillierte Fehlermeldungen und Lösungsvorschläge
-
----
 
 ## 🤝 Contributing & Community
 
