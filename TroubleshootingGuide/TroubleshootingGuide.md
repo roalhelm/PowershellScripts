@@ -181,7 +181,7 @@ Event Viewer: Application / System (export)
 | 0x80246019 | Download problem | Reset BITS/WU, check Delivery Optimization |
 
 ---
-## 9. Useful supplemental commands
+## 9. Useful supplemental commands & RegKeys
 ```powershell
 # Recent Intune sync events
 Get-EventLog -LogName Microsoft-Windows-DeviceManagement-Enterprise-Diagnostics-Provider/Admin -Newest 30 |
@@ -194,6 +194,15 @@ Get-Process | Where-Object { $_.Name -match 'wu|setup|update' } | Select Name, I
 Get-DeliveryOptimizationStatus | Select-Object FileName, Status, BytesDownloaded, BytesFromPeers
 ```
 
+```
+Reg Keys block installation
+
+$key1 = "HKLM:\SOFTWARE\Microsoft\PolicyManager\current\device\Update"
+
+$key2 = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection"
+
+$key3 = "HKLM:SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Appraiser\GWX"
+```
 ---
 ## 10. Post-remediation cleanup
 If `SoftwareDistribution.old` exists and updates work again: delete after a few days to reclaim space. Re-enable any 3rd‑party tools disabled for testing.
