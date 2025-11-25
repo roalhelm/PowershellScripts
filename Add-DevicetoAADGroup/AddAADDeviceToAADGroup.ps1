@@ -5,6 +5,13 @@
     GitHub Repository: https://github.com/roalhelm/
 
 .CHANGES
+    Version 1.5 (2025-11-24):
+    - Added cross-platform support (macOS, Linux, Windows)
+    - Automatic detection of PowerShell version (Core 7+ vs Windows PowerShell 5.1)
+    - Uses Microsoft.Graph SDK for PowerShell Core 7+
+    - Falls back to AzureAD module for Windows PowerShell 5.1
+    - Improved module installation and import error handling
+
     Version 1.4 (2025-09-17):
     - Improved error handling: If the error 'One or more added object references already exist for the following modified properties' occurs, the script now outputs that the client is already in the group and logs this as a warning instead of an error.
 
@@ -33,37 +40,96 @@
     The script prompts the user for an Azure AD group name, then reads a CSV file named 'Devices.csv' containing device names.
     It verifies if each device is already a member of the specified Azure AD group before adding it.
     A log file is created to track successes, failures, and already existing devices.
+    
+    The script automatically detects the PowerShell version:
+    - PowerShell Core 7+ (macOS, Linux, Windows): Uses Microsoft.Graph SDK
+    - Windows PowerShell 5.1: Uses AzureAD module
 
 .NOTES
-    - Ensure that you have the AzureAD module installed before running this script.
-    - The script connects to Azure AD and requires appropriate permissions.
+    - For PowerShell Core 7+: Requires Microsoft.Graph module (cross-platform)
+    - For Windows PowerShell 5.1: Requires AzureAD module (Windows only)
+    - The script will automatically install the required module if not present
+    - Appropriate Azure AD permissions are required
     - The CSV file must be placed in the same directory as this script.
 
 .AUTHOR
 
     Original script by Ronny Alhelm
-    Version        : 1.4
+    Version        : 1.5
     Creation Date  : 2025-03-10
-    Last Modified  : 2025-09-17
+    Last Modified  : 2025-11-24
 
 .EXAMPLE
-    PS C:\> .\Add-DevicesToAADGroup.ps1
+    PS C:\> .\AddAADDeviceToAADGroup.ps1
     Enter the Azure AD group name: MyDeviceGroup
     The script will process the devices listed in 'Devices.csv' and attempt to add them to 'MyDeviceGroup'.
+    
+    Works on Windows (PowerShell 5.1 or 7+), macOS (PowerShell 7+), and Linux (PowerShell 7+).
 #>
+
+# Detect PowerShell version and set module preference
+$isPwsh7 = $PSVersionTable.PSEdition -eq 'Core'
+$useGraph = $false
+
+if ($isPwsh7) {
+    $useGraph = $true
+    Write-Host "PowerShell Core detected. Will use Microsoft Graph PowerShell SDK." -ForegroundColor Cyan
+    
+    # Check and install Microsoft.Graph module
+    if (-not (Get-Module -ListAvailable -Name Microsoft.Graph)) {
+        try {
+            Write-Host "Microsoft.Graph module not found. Installing..." -ForegroundColor Yellow
+            Install-Module Microsoft.Graph -Scope CurrentUser -Force -ErrorAction Stop
+            Write-Host "Microsoft.Graph module has been installed successfully." -ForegroundColor Green
+        } catch {
+            Write-Host "FATAL ERROR: Could not install Microsoft.Graph module. Please install manually." -ForegroundColor Red
+            Write-Host "Error: $_" -ForegroundColor Red
+            exit 1
+        }
+    } else {
+        Write-Host "Microsoft.Graph module is already installed." -ForegroundColor Green
+    }
+    
+    # Import Microsoft.Graph module
+    try {
+        Import-Module Microsoft.Graph -ErrorAction Stop
+        Write-Host "Microsoft.Graph module imported successfully." -ForegroundColor Green
+    } catch {
+        Write-Host "FATAL ERROR: Could not import Microsoft.Graph module." -ForegroundColor Red
+        Write-Host "Error: $_" -ForegroundColor Red
+        exit 1
+    }
+} else {
+    Write-Host "Windows PowerShell detected. Will use AzureAD module." -ForegroundColor Cyan
+    
+    # Check and install AzureAD module
+    if (-not (Get-Module -ListAvailable -Name AzureAD)) {
+        try {
+            Write-Host "AzureAD module not found. Installing..." -ForegroundColor Yellow
+            Install-Module AzureAD -Scope CurrentUser -Force -ErrorAction Stop
+            Write-Host "AzureAD module has been installed successfully." -ForegroundColor Green
+        } catch {
+            Write-Host "FATAL ERROR: Could not install AzureAD module. Please install manually." -ForegroundColor Red
+            Write-Host "Error: $_" -ForegroundColor Red
+            exit 1
+        }
+    } else {
+        Write-Host "AzureAD module is already installed." -ForegroundColor Green
+    }
+    
+    # Import AzureAD module
+    try {
+        Import-Module AzureAD -ErrorAction Stop
+        Write-Host "AzureAD module imported successfully." -ForegroundColor Green
+    } catch {
+        Write-Host "FATAL ERROR: Could not import AzureAD module." -ForegroundColor Red
+        Write-Host "Error: $_" -ForegroundColor Red
+        exit 1
+    }
+}
 
 # Prompt the user for the group name
 $groupName = Read-Host "Enter the Azure AD group name"
-
-# Check if the AzureAD module is installed
-$module = Get-Module -ListAvailable -Name AzureAD
-
-if (-not $module) {
-    Install-Module AzureAD -Scope CurrentUser -Force
-    Write-Output "AzureAD module has been installed successfully."
-} else {
-    Write-Output "AzureAD module is already installed."
-}
 
 # Prompt the user for CSV file choice
 $csvChoice = Read-Host "Which CSV file do you want to use? Enter 1 for Devices.csv or 2 for Devices_In_AAD.csv"
@@ -102,74 +168,163 @@ Write-Host "Ensure the file is placed in the same directory as this script."
 
 try {
     $deviceList = Import-Csv -Path $csvPath
-    Connect-AzureAD
     
-    # Get the Azure AD group object and test if it exists
-    $groupObj = Get-AzureADGroup -SearchString $groupName
-    
-    if ($null -eq $groupObj) {
-        Write-Host "Error: The specified Azure AD group '$groupName' does not exist." -ForegroundColor Red
-        exit 1
-    }
-    
-    if ($groupObj.Count -gt 1) {
-        Write-Host "Warning: Multiple groups found with the name '$groupName'. Please specify a more precise group name." -ForegroundColor Yellow
-        Write-Host "Found groups:"
-        $groupObj | Format-Table DisplayName, ObjectId
-        exit 1
-    }
-    
-    # Get the current members of the group
-    $groupMembers = Get-AzureADGroupMember -ObjectId $groupObj.ObjectId | Select-Object -ExpandProperty ObjectId
-    
-    # Define log files with timestamps
-    $timestamp = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
-    $logFile = "./Device_Addition_Log_$timestamp.txt"
-    $errorLogFile = "./Device_Addition_ErrorLog_$timestamp.txt"
-    
-    # Create header for log files
-    $logHeader = "=== Device Addition Log - Started at $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') ==="
-    Add-Content -Path $logFile -Value $logHeader
-    Add-Content -Path $errorLogFile -Value $logHeader
-    
-    foreach ($device in $deviceList) {
-        $currentTime = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-        $deviceObj = Get-AzureADDevice -SearchString $device.DeviceName
+    if ($useGraph) {
+        # Microsoft Graph logic (PowerShell Core 7+)
+        Write-Host "`nConnecting to Microsoft Graph..." -ForegroundColor Cyan
+        Connect-MgGraph -Scopes "Group.ReadWrite.All", "Directory.Read.All", "Device.Read.All"
         
-        if ($deviceObj -ne $null) {
-            foreach ($dev in $deviceObj) {
-                if ($groupMembers -contains $dev.ObjectId) {
-                    $alreadyInGroupMessage = "[$currentTime] INFO: Device $($device.DeviceName) is already a member of group $groupName."
-                    Write-Host $alreadyInGroupMessage
-                    Add-Content -Path $logFile -Value $alreadyInGroupMessage
-                } else {
-                    try {
-                        Add-AzureADGroupMember -ObjectId $groupObj.ObjectId -RefObjectId $dev.ObjectId       
-                        $successMessage = "[$currentTime] SUCCESS: Device $($device.DeviceName) added to group $groupName."
-                        Write-Host $successMessage
-                        Add-Content -Path $logFile -Value $successMessage
-                    }
-                    catch {
-                        $errMsg = $_.Exception.Message
-                        if ($errMsg -like '*One or more added object references already exist for the following modified properties*') {
-                            $alreadyMsg = "[$currentTime] WARNING: Device $($device.DeviceName) is already a member of group $groupName (detected by error)."
-                            Write-Host "Device $($device.DeviceName) is already in the group $groupName (detected by error)." -ForegroundColor Yellow
-                            Add-Content -Path $logFile -Value $alreadyMsg
-                            Add-Content -Path $errorLogFile -Value $alreadyMsg
-                        } else {
-                            $errorMessage = "[$currentTime] ERROR: Device $($device.DeviceName) could not be added to the group. Error: $errMsg"
-                            Write-Host $errorMessage -ForegroundColor Red
-                            Add-Content -Path $logFile -Value $errorMessage
-                            Add-Content -Path $errorLogFile -Value $errorMessage
+        # Get the Azure AD group object and test if it exists
+        $groupObj = Get-MgGroup -Filter "displayName eq '$groupName'"
+        
+        if ($null -eq $groupObj) {
+            Write-Host "Error: The specified Azure AD group '$groupName' does not exist." -ForegroundColor Red
+            Disconnect-MgGraph
+            exit 1
+        }
+        
+        if ($groupObj.Count -gt 1) {
+            Write-Host "Warning: Multiple groups found with the name '$groupName'. Please specify a more precise group name." -ForegroundColor Yellow
+            Write-Host "Found groups:"
+            $groupObj | Format-Table DisplayName, Id
+            Disconnect-MgGraph
+            exit 1
+        }
+        
+        $groupId = $groupObj.Id
+        
+        # Get the current members of the group
+        $groupMembers = Get-MgGroupMember -GroupId $groupId | Select-Object -ExpandProperty Id
+        
+        # Define log files with timestamps
+        $timestamp = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
+        $logFile = "./Device_Addition_Log_$timestamp.txt"
+        $errorLogFile = "./Device_Addition_ErrorLog_$timestamp.txt"
+        
+        # Create header for log files
+        $logHeader = "=== Device Addition Log - Started at $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') ==="
+        Add-Content -Path $logFile -Value $logHeader
+        Add-Content -Path $errorLogFile -Value $logHeader
+        
+        foreach ($device in $deviceList) {
+            $currentTime = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+            $deviceObj = Get-MgDevice -Filter "displayName eq '$($device.DeviceName)'"
+            
+            if ($null -ne $deviceObj) {
+                foreach ($dev in $deviceObj) {
+                    if ($groupMembers -contains $dev.Id) {
+                        $alreadyInGroupMessage = "[$currentTime] INFO: Device $($device.DeviceName) is already a member of group $groupName."
+                        Write-Host $alreadyInGroupMessage
+                        Add-Content -Path $logFile -Value $alreadyInGroupMessage
+                    } else {
+                        try {
+                            New-MgGroupMember -GroupId $groupId -DirectoryObjectId $dev.Id
+                            $successMessage = "[$currentTime] SUCCESS: Device $($device.DeviceName) added to group $groupName."
+                            Write-Host $successMessage -ForegroundColor Green
+                            Add-Content -Path $logFile -Value $successMessage
+                        }
+                        catch {
+                            $errMsg = $_.Exception.Message
+                            if ($errMsg -like '*already exist*' -or $errMsg -like '*already a member*') {
+                                $alreadyMsg = "[$currentTime] WARNING: Device $($device.DeviceName) is already a member of group $groupName (detected by error)."
+                                Write-Host "Device $($device.DeviceName) is already in the group $groupName (detected by error)." -ForegroundColor Yellow
+                                Add-Content -Path $logFile -Value $alreadyMsg
+                                Add-Content -Path $errorLogFile -Value $alreadyMsg
+                            } else {
+                                $errorMessage = "[$currentTime] ERROR: Device $($device.DeviceName) could not be added to the group. Error: $errMsg"
+                                Write-Host $errorMessage -ForegroundColor Red
+                                Add-Content -Path $logFile -Value $errorMessage
+                                Add-Content -Path $errorLogFile -Value $errorMessage
+                            }
                         }
                     }
                 }
+            } else {
+                $notFoundMessage = "[$currentTime] WARNING: No device found in AAD for $($device.DeviceName)."
+                Write-Host $notFoundMessage -ForegroundColor Yellow
+                Add-Content -Path $logFile -Value $notFoundMessage
+                Add-Content -Path $errorLogFile -Value $notFoundMessage
             }
-        } else {
-            $notFoundMessage = "[$currentTime] WARNING: No device found in AAD for $($device.DeviceName)."
-            Write-Host $notFoundMessage -ForegroundColor Yellow
-            Add-Content -Path $logFile -Value $notFoundMessage
-            Add-Content -Path $errorLogFile -Value $notFoundMessage
+        }
+        
+        Disconnect-MgGraph
+        
+    } else {
+        # AzureAD logic (Windows PowerShell 5.1)
+        Write-Host "`nConnecting to Azure AD..." -ForegroundColor Cyan
+        Connect-AzureAD
+        
+        # AzureAD logic (Windows PowerShell 5.1)
+        Write-Host "`nConnecting to Azure AD..." -ForegroundColor Cyan
+        Connect-AzureAD
+    
+        # Get the Azure AD group object and test if it exists
+        $groupObj = Get-AzureADGroup -SearchString $groupName
+        
+        if ($null -eq $groupObj) {
+            Write-Host "Error: The specified Azure AD group '$groupName' does not exist." -ForegroundColor Red
+            exit 1
+        }
+        
+        if ($groupObj.Count -gt 1) {
+            Write-Host "Warning: Multiple groups found with the name '$groupName'. Please specify a more precise group name." -ForegroundColor Yellow
+            Write-Host "Found groups:"
+            $groupObj | Format-Table DisplayName, ObjectId
+            exit 1
+        }
+        
+        # Get the current members of the group
+        $groupMembers = Get-AzureADGroupMember -ObjectId $groupObj.ObjectId | Select-Object -ExpandProperty ObjectId
+        
+        # Define log files with timestamps
+        $timestamp = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
+        $logFile = "./Device_Addition_Log_$timestamp.txt"
+        $errorLogFile = "./Device_Addition_ErrorLog_$timestamp.txt"
+        
+        # Create header for log files
+        $logHeader = "=== Device Addition Log - Started at $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') ==="
+        Add-Content -Path $logFile -Value $logHeader
+        Add-Content -Path $errorLogFile -Value $logHeader
+        
+        foreach ($device in $deviceList) {
+            $currentTime = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+            $deviceObj = Get-AzureADDevice -SearchString $device.DeviceName
+            
+            if ($deviceObj -ne $null) {
+                foreach ($dev in $deviceObj) {
+                    if ($groupMembers -contains $dev.ObjectId) {
+                        $alreadyInGroupMessage = "[$currentTime] INFO: Device $($device.DeviceName) is already a member of group $groupName."
+                        Write-Host $alreadyInGroupMessage
+                        Add-Content -Path $logFile -Value $alreadyInGroupMessage
+                    } else {
+                        try {
+                            Add-AzureADGroupMember -ObjectId $groupObj.ObjectId -RefObjectId $dev.ObjectId       
+                            $successMessage = "[$currentTime] SUCCESS: Device $($device.DeviceName) added to group $groupName."
+                            Write-Host $successMessage -ForegroundColor Green
+                            Add-Content -Path $logFile -Value $successMessage
+                        }
+                        catch {
+                            $errMsg = $_.Exception.Message
+                            if ($errMsg -like '*One or more added object references already exist for the following modified properties*') {
+                                $alreadyMsg = "[$currentTime] WARNING: Device $($device.DeviceName) is already a member of group $groupName (detected by error)."
+                                Write-Host "Device $($device.DeviceName) is already in the group $groupName (detected by error)." -ForegroundColor Yellow
+                                Add-Content -Path $logFile -Value $alreadyMsg
+                                Add-Content -Path $errorLogFile -Value $alreadyMsg
+                            } else {
+                                $errorMessage = "[$currentTime] ERROR: Device $($device.DeviceName) could not be added to the group. Error: $errMsg"
+                                Write-Host $errorMessage -ForegroundColor Red
+                                Add-Content -Path $logFile -Value $errorMessage
+                                Add-Content -Path $errorLogFile -Value $errorMessage
+                            }
+                        }
+                    }
+                }
+            } else {
+                $notFoundMessage = "[$currentTime] WARNING: No device found in AAD for $($device.DeviceName)."
+                Write-Host $notFoundMessage -ForegroundColor Yellow
+                Add-Content -Path $logFile -Value $notFoundMessage
+                Add-Content -Path $errorLogFile -Value $notFoundMessage
+            }
         }
     }
 }
