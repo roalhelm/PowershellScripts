@@ -1,20 +1,23 @@
 # 🛠️ PowerShell Administrative Scripts Collection
 
-[![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B-blue?logo=powershell)](https://github.com/PowerShell/PowerShell)
+[![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B%20%7C%207%2B-blue?logo=powershell)](https://github.com/PowerShell/PowerShell)
 [![License](https://img.shields.io/badge/License-GPL%20v3-green.svg)](LICENSE)
-[![Last Update](https://img.shields.io/badge/Last%20Update-October%202025-brightgreen)](https://github.com/roalhelm/PowershellScripts)
+[![Last Update](https://img.shields.io/badge/Last%20Update-November%202025-brightgreen)](https://github.com/roalhelm/PowershellScripts)
 [![Scripts](https://img.shields.io/badge/Scripts-30%2B-orange)](https://github.com/roalhelm/PowershellScripts)
+[![Cross-Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey?logo=apple)](https://github.com/roalhelm/PowershellScripts)
 
 A comprehensive collection of PowerShell scripts for system administration, Microsoft Intune, Windows Updates, network diagnostics, user/group management, and remediation tasks in modern Windows enterprise environments.
 
 ## 🌟 Latest Features & Highlights
 
+- **🖥️ Cross-Platform Support** - Scripts now work on Windows, macOS, and Linux with PowerShell Core 7+
 - **🔌 Microsoft Endpoint Connectivity Tester V2.1** - Advanced connectivity, latency, and performance tests with HTML reports
 - **🔄 Comprehensive Intune Management** - Complete suite for Intune management and troubleshooting  
 - **📊 Professional HTML Reports** - Responsive design with Microsoft Look & Feel
 - **🎯 Selective Service Testing** - Choose specific services for targeted checks
 - **⚡ Performance-Optimized** - Configurable tests for quick or comprehensive analyses
 - **🏥 Advanced Remediation Scripts** - For Intune, Office, Windows Update, Dell Management
+- **🍎 macOS Compatible** - Azure AD device management scripts now fully support macOS
 
 ---
 
@@ -42,18 +45,34 @@ cd PowershellScripts
 
 | Requirement | Details | Usage |
 |-------------|---------|-------|
-| **PowerShell** | 5.1 or higher | All scripts |
-| **Permissions** | Administrator (mostly) | System/Registry operations |
-| **Operating System** | Windows 10/11, Server 2016+ | Tested on modern systems |
+| **PowerShell** | 5.1 (Windows) or 7+ (Cross-Platform) | All scripts |
+| **Operating System** | Windows 10/11, Server 2016+, macOS, Linux | Platform-specific features noted |
+| **Permissions** | Administrator (Windows) / sudo (macOS/Linux) | System/Registry operations |
 | **Internet** | Required | Cloud service tests, downloads |
 
 ### Required PowerShell Modules:
 ```powershell
-# Auto-install
-Install-Module PSWindowsUpdate, Microsoft.Graph, ActiveDirectory -Force -AllowClobber
+# Windows (PowerShell 5.1)
+Install-Module PSWindowsUpdate, AzureAD, ActiveDirectory -Force -AllowClobber
+
+# Cross-Platform (PowerShell 7+ on Windows, macOS, Linux)
+Install-Module Microsoft.Graph -Force -AllowClobber
 
 # For Graph API (Intune/Azure scripts)
 Connect-MgGraph -Scopes "Device.Read.All", "Group.ReadWrite.All"
+```
+
+### 🍎 macOS / 🐧 Linux Specific Requirements:
+```bash
+# Install PowerShell 7+ on macOS
+brew install --cask powershell
+
+# Install PowerShell 7+ on Linux (Ubuntu/Debian)
+sudo apt-get update
+sudo apt-get install -y powershell
+
+# Launch PowerShell
+pwsh
 ```
 
 ---
@@ -127,12 +146,20 @@ Connect-MgGraph -Scopes "Device.Read.All", "Group.ReadWrite.All"
 | **[IntuneCompareUser/IntuneCompareUser.ps1](IntuneCompareUser/IntuneCompareUser.ps1)** | Entra ID user comparison | Multi-user analysis | Microsoft Graph |
 
 ### 🎯 Azure AD/Entra ID Device Management
-| Script | Description | Use Case | Bulk Operations |
-|--------|-------------|----------|-----------------|
-| **[Add-DevicetoAADGroup/AADChecker.ps1](Add-DevicetoAADGroup/AADChecker.ps1)** | Check Azure AD connection | Pre-flight checks | ❌ |
-| **[Add-DevicetoAADGroup/Add-DevicesToAADGroupFunction.ps1](Add-DevicetoAADGroup/Add-DevicesToAADGroupFunction.ps1)** | PowerShell function for bulk operations | Automation function | ✅ |
-| **[Add-DevicetoAADGroup/AddAADDeviceToAADGroup.ps1](Add-DevicetoAADGroup/AddAADDeviceToAADGroup.ps1)** | Add single device to group | Manual assignment | ❌ |
-| **[Add-DevicetoAADGroup/AddDeviceCSV.ps1](Add-DevicetoAADGroup/AddDeviceCSV.ps1)** | CSV-based device assignment | Bulk import | ✅ |
+| Script | Description | Platform Support | Use Case | Bulk Operations |
+|--------|-------------|------------------|----------|-----------------|
+| **[Add-DevicetoAADGroup/AADChecker.ps1](Add-DevicetoAADGroup/AADChecker.ps1)** | Check devices in Azure AD | 🪟 Windows / 🍎 macOS / 🐧 Linux | Pre-flight checks | ❌ |
+| **[Add-DevicetoAADGroup/Add-DevicesToAADGroupFunction.ps1](Add-DevicetoAADGroup/Add-DevicesToAADGroupFunction.ps1)** | PowerShell function for bulk operations | 🪟 Windows / 🍎 macOS / 🐧 Linux | Automation function | ✅ |
+| **[Add-DevicetoAADGroup/AddAADDeviceToAADGroup.ps1](Add-DevicetoAADGroup/AddAADDeviceToAADGroup.ps1)** ⭐ NEW | **Cross-platform device group assignment** | 🪟 **Windows** / 🍎 **macOS** / 🐧 **Linux** | Manual/automated assignment | ❌ |
+| **[Add-DevicetoAADGroup/AddDeviceCSV.ps1](Add-DevicetoAADGroup/AddDeviceCSV.ps1)** | CSV-based device assignment (GUI) | 🪟 Windows only | Bulk import | ✅ |
+
+#### 🆕 AddAADDeviceToAADGroup.ps1 - Cross-Platform Features (v1.5)
+- **🖥️ Platform Detection**: Automatically detects PowerShell version and platform
+- **📦 Module Selection**: 
+  - PowerShell Core 7+ → Uses **Microsoft.Graph SDK** (macOS/Linux/Windows)
+  - Windows PowerShell 5.1 → Uses **AzureAD module** (Windows only)
+- **🔄 Auto-Installation**: Automatically installs required modules if missing
+- **✅ Full Compatibility**: Works identically on Windows, macOS, and Linux with PowerShell 7+
 
 ### 🔄 Graph API & Remote Operations
 | Script | API/Service | Function | Pagination |
@@ -233,6 +260,24 @@ if ($LASTEXITCODE -ne 0) {
 # Systematically fix Windows Update issues
 .\REP_WindowsUpdate.ps1
 .\Remediations\RepairWinUpdate\detection.ps1
+```
+
+### 🍎 Cross-Platform Azure AD Device Management (macOS/Linux)
+```powershell
+# On macOS/Linux with PowerShell 7+
+pwsh
+
+# Install Microsoft.Graph module (auto-installed by script if missing)
+Install-Module Microsoft.Graph -Scope CurrentUser -Force
+
+# Run the script - works identically to Windows
+./Add-DevicetoAADGroup/AddAADDeviceToAADGroup.ps1
+
+# The script automatically:
+# 1. Detects PowerShell Core 7+
+# 2. Uses Microsoft.Graph SDK instead of AzureAD module
+# 3. Installs missing modules if needed
+# 4. Provides same functionality as Windows version
 ```
 
 ### 🚀 Pre-Deployment Validation
@@ -401,6 +446,43 @@ $RequiredModules | ForEach-Object {
 - 📧 **Email Reports** - Automatic report delivery
 - 🌍 **Multi-Language Support** - International localization
 - 📱 **Mobile App Companion** - Native app for report viewing
+- 🍎 **Enhanced macOS/Linux Support** - More cross-platform scripts
+
+---
+
+## 🖥️ Cross-Platform Compatibility Guide
+
+### ✅ Fully Compatible Scripts (Windows, macOS, Linux with PowerShell 7+)
+| Script | PowerShell Core 7+ | Windows PS 5.1 | Notes |
+|--------|-------------------|----------------|-------|
+| **AddAADDeviceToAADGroup.ps1** | ✅ Microsoft.Graph | ✅ AzureAD | Auto-detection |
+| **Add-DevicesToAADGroupFunction.ps1** | ✅ Microsoft.Graph | ✅ AzureAD | Auto-detection |
+| **GraphApiOdataNextLink.ps1** | ✅ Microsoft.Graph | ✅ Microsoft.Graph | Pure Graph API |
+| **IntuneCompareUser.ps1** | ✅ Microsoft.Graph | ✅ Microsoft.Graph | Pure Graph API |
+
+### ⚠️ Windows-Only Scripts
+| Script | Reason | Alternative |
+|--------|--------|-------------|
+| **AddDeviceCSV.ps1** | System.Windows.Forms (GUI) | Manual CSV creation |
+| **PSrepairIntuneManagementextention.ps1** | Windows-specific services | N/A |
+| **REP_WindowsUpdate.ps1** | Windows Update components | N/A |
+| **PSrepairWMI.ps1** | WMI (Windows-specific) | N/A |
+
+### 🔧 Platform Detection Example
+```powershell
+# How scripts detect platform and choose appropriate module
+$isPwshCore = $PSVersionTable.PSEdition -eq 'Core'
+
+if ($isPwshCore) {
+    # PowerShell Core 7+ (Windows/macOS/Linux)
+    Import-Module Microsoft.Graph
+    Connect-MgGraph -Scopes "Device.Read.All", "Group.ReadWrite.All"
+} else {
+    # Windows PowerShell 5.1
+    Import-Module AzureAD
+    Connect-AzureAD
+}
+```
 
 ---
 
@@ -425,14 +507,21 @@ if ($currentPath -notlike "*$scriptPath*") {
 
 ### 2️⃣ Dependencies & Prerequisites  
 ```powershell
-# PowerShell module installation
-$RequiredModules = @('PSWindowsUpdate', 'Microsoft.Graph', 'ActiveDirectory')
-$RequiredModules | ForEach-Object {
+# === Windows PowerShell 5.1 ===
+$WindowsModules = @('PSWindowsUpdate', 'AzureAD', 'ActiveDirectory')
+$WindowsModules | ForEach-Object {
     Install-Module $_ -Force -AllowClobber -Scope CurrentUser
     Import-Module $_ -Force
 }
 
-# Graph API authentication (for Intune/Azure scripts)
+# === PowerShell Core 7+ (Windows/macOS/Linux) ===
+$CrossPlatformModules = @('Microsoft.Graph')
+$CrossPlatformModules | ForEach-Object {
+    Install-Module $_ -Force -AllowClobber -Scope CurrentUser
+    Import-Module $_ -Force
+}
+
+# Graph API authentication (for Intune/Azure scripts on all platforms)
 Connect-MgGraph -Scopes @(
     "Device.Read.All", 
     "Group.ReadWrite.All", 
@@ -442,6 +531,27 @@ Connect-MgGraph -Scopes @(
 
 # Connectivity pre-check
 Test-NetConnection github.com -Port 443 -InformationLevel Quiet
+```
+
+### 🍎 macOS / 🐧 Linux Specific Setup
+```bash
+# Install PowerShell 7+ on macOS
+brew install --cask powershell
+
+# Install PowerShell 7+ on Linux (Ubuntu/Debian)
+wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
+sudo dpkg -i packages-microsoft-prod.deb
+sudo apt-get update
+sudo apt-get install -y powershell
+
+# Launch PowerShell
+pwsh
+
+# Install Microsoft.Graph module
+pwsh -Command "Install-Module Microsoft.Graph -Scope CurrentUser -Force"
+
+# Test cross-platform scripts
+pwsh -File ./Add-DevicetoAADGroup/AddAADDeviceToAADGroup.ps1
 ```
 
 ### 3️⃣ First Run & Validation
@@ -530,15 +640,15 @@ Use [GitHub Issues](https://github.com/roalhelm/PowershellScripts/issues) for:
 ![Enterprise Ready](https://img.shields.io/badge/Enterprise-Ready-blue)
 
 ### 📈 Script Metrics
-| Category | Script Count | Lines of Code | Last Updated |
-|----------|--------------|---------------|--------------|
-| **Network & Connectivity** | 2 | 1,200+ | October 2025 |
-| **System & Updates** | 4 | 800+ | October 2025 |
-| **Intune & MDM** | 2 | 400+ | October 2025 |
-| **User & Group Management** | 6 | 600+ | October 2025 |
-| **Remediation Scripts** | 15+ | 1,000+ | October 2025 |
-| **Troubleshooting Tools** | 2 | 300+ | October 2025 |
-| **Total** | **30+** | **4,300+** | **Actively maintained** |
+| Category | Script Count | Lines of Code | Last Updated | Platform Support |
+|----------|--------------|---------------|--------------|------------------|
+| **Network & Connectivity** | 2 | 1,200+ | October 2025 | All Platforms |
+| **System & Updates** | 4 | 800+ | October 2025 | Windows Only |
+| **Intune & MDM** | 2 | 400+ | October 2025 | Windows Only |
+| **User & Group Management** | 6 | 600+ | November 2025 | **Cross-Platform** ⭐ |
+| **Remediation Scripts** | 15+ | 1,000+ | October 2025 | Windows Only |
+| **Troubleshooting Tools** | 2 | 300+ | October 2025 | Windows Only |
+| **Total** | **30+** | **4,300+** | **Actively maintained** | **Mixed** |
 
 ---
 
@@ -576,8 +686,9 @@ This project is licensed under the **[GNU General Public License v3.0](LICENSE)*
 [![Enterprise Ready](https://img.shields.io/badge/Enterprise-Ready-success)](https://github.com/roalhelm/PowershellScripts)
 [![Security Tested](https://img.shields.io/badge/Security-Tested-green)](https://github.com/roalhelm/PowershellScripts)
 [![Documentation](https://img.shields.io/badge/Documentation-Complete-brightgreen)](https://github.com/roalhelm/PowershellScripts)
+[![Cross-Platform](https://img.shields.io/badge/Cross--Platform-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey)](https://github.com/roalhelm/PowershellScripts)
 
-### 💼 **Professional** | 🚀 **Continuously Updated** | 🛡️ **Security Focused** | 📱 **Modern Design** | 🏢 **Enterprise Grade**
+### 💼 **Professional** | 🚀 **Continuously Updated** | 🛡️ **Security Focused** | 📱 **Modern Design** | 🏢 **Enterprise Grade** | 🖥️ **Cross-Platform**
 
 ---
 
