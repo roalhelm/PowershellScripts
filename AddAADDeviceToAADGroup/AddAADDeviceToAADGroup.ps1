@@ -152,19 +152,48 @@ if (-not (Test-Path $csvPath)) {
 
 # Validate CSV header
 $csvHeader = Get-Content -Path $csvPath -TotalCount 1
-if ($csvHeader -ne "DeviceName") {
-    Write-Host "Error: The CSV file must have 'DeviceName' as the header in the first row." -ForegroundColor Red
+$validHeaders = @("DeviceName", "AzureADDeviceId", "DeviceId")
+$headerValid = $false
+$useDeviceId = $false
+
+foreach ($header in $validHeaders) {
+    if ($csvHeader -eq $header) {
+        $headerValid = $true
+        if ($header -in @("AzureADDeviceId", "DeviceId")) {
+            $useDeviceId = $true
+        }
+        break
+    }
+}
+
+if (-not $headerValid) {
+    Write-Host "Error: The CSV file must have one of the following headers: $($validHeaders -join ', ')" -ForegroundColor Red
     Write-Host "Current header is: $csvHeader" -ForegroundColor Yellow
     exit 1
 }
 
 # Inform the user about the required CSV format
-Write-Host "The CSV file should have the following format:"
+Write-Host "The CSV file should have one of the following formats:" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "Option 1 (Device Name):"
 Write-Host "DeviceName"
 Write-Host "Device1"
 Write-Host "Device2"
-Write-Host "..."
+Write-Host ""
+Write-Host "Option 2 (Azure AD Device ID):"
+Write-Host "AzureADDeviceId"
+Write-Host "12345678-1234-1234-1234-123456789abc"
+Write-Host "87654321-4321-4321-4321-cba987654321"
+Write-Host ""
 Write-Host "Ensure the file is placed in the same directory as this script."
+Write-Host ""
+
+if ($useDeviceId) {
+    Write-Host "Detected: CSV contains Azure AD Device IDs" -ForegroundColor Green
+} else {
+    Write-Host "Detected: CSV contains Device Names" -ForegroundColor Green
+}
+Write-Host ""
 
 try {
     $deviceList = Import-Csv -Path $csvPath
@@ -208,30 +237,61 @@ try {
         
         foreach ($device in $deviceList) {
             $currentTime = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-            $deviceObj = Get-MgDevice -Filter "displayName eq '$($device.DeviceName)'"
+            
+            # Get device based on input type (DeviceName or DeviceId)
+            if ($useDeviceId) {
+                # Using Azure AD Device ID directly
+                $deviceId = $device.AzureADDeviceId
+                if ([string]::IsNullOrWhiteSpace($deviceId)) {
+                    $deviceId = $device.DeviceId
+                }
+                
+                if ([string]::IsNullOrWhiteSpace($deviceId)) {
+                    $notFoundMessage = "[$currentTime] WARNING: Empty Device ID in CSV row."
+                    Write-Host $notFoundMessage -ForegroundColor Yellow
+                    Add-Content -Path $logFile -Value $notFoundMessage
+                    Add-Content -Path $errorLogFile -Value $notFoundMessage
+                    continue
+                }
+                
+                try {
+                    $deviceObj = Get-MgDevice -DeviceId $deviceId -ErrorAction Stop
+                } catch {
+                    $notFoundMessage = "[$currentTime] WARNING: No device found in AAD with ID: $deviceId"
+                    Write-Host $notFoundMessage -ForegroundColor Yellow
+                    Add-Content -Path $logFile -Value $notFoundMessage
+                    Add-Content -Path $errorLogFile -Value $notFoundMessage
+                    continue
+                }
+            } else {
+                # Using Device Name (original logic)
+                $deviceObj = Get-MgDevice -Filter "displayName eq '$($device.DeviceName)'"
+            }
             
             if ($null -ne $deviceObj) {
                 foreach ($dev in $deviceObj) {
+                    $deviceIdentifier = if ($useDeviceId) { $deviceId } else { $device.DeviceName }
+                    
                     if ($groupMembers -contains $dev.Id) {
-                        $alreadyInGroupMessage = "[$currentTime] INFO: Device $($device.DeviceName) is already a member of group $groupName."
+                        $alreadyInGroupMessage = "[$currentTime] INFO: Device $deviceIdentifier is already a member of group $groupName."
                         Write-Host $alreadyInGroupMessage
                         Add-Content -Path $logFile -Value $alreadyInGroupMessage
                     } else {
                         try {
                             New-MgGroupMember -GroupId $groupId -DirectoryObjectId $dev.Id
-                            $successMessage = "[$currentTime] SUCCESS: Device $($device.DeviceName) added to group $groupName."
+                            $successMessage = "[$currentTime] SUCCESS: Device $deviceIdentifier added to group $groupName."
                             Write-Host $successMessage -ForegroundColor Green
                             Add-Content -Path $logFile -Value $successMessage
                         }
                         catch {
                             $errMsg = $_.Exception.Message
                             if ($errMsg -like '*already exist*' -or $errMsg -like '*already a member*') {
-                                $alreadyMsg = "[$currentTime] WARNING: Device $($device.DeviceName) is already a member of group $groupName (detected by error)."
-                                Write-Host "Device $($device.DeviceName) is already in the group $groupName (detected by error)." -ForegroundColor Yellow
+                                $alreadyMsg = "[$currentTime] WARNING: Device $deviceIdentifier is already a member of group $groupName (detected by error)."
+                                Write-Host "Device $deviceIdentifier is already in the group $groupName (detected by error)." -ForegroundColor Yellow
                                 Add-Content -Path $logFile -Value $alreadyMsg
                                 Add-Content -Path $errorLogFile -Value $alreadyMsg
                             } else {
-                                $errorMessage = "[$currentTime] ERROR: Device $($device.DeviceName) could not be added to the group. Error: $errMsg"
+                                $errorMessage = "[$currentTime] ERROR: Device $deviceIdentifier could not be added to the group. Error: $errMsg"
                                 Write-Host $errorMessage -ForegroundColor Red
                                 Add-Content -Path $logFile -Value $errorMessage
                                 Add-Content -Path $errorLogFile -Value $errorMessage
@@ -240,7 +300,8 @@ try {
                     }
                 }
             } else {
-                $notFoundMessage = "[$currentTime] WARNING: No device found in AAD for $($device.DeviceName)."
+                $deviceIdentifier = if ($useDeviceId) { $deviceId } else { $device.DeviceName }
+                $notFoundMessage = "[$currentTime] WARNING: No device found in AAD for $deviceIdentifier."
                 Write-Host $notFoundMessage -ForegroundColor Yellow
                 Add-Content -Path $logFile -Value $notFoundMessage
                 Add-Content -Path $errorLogFile -Value $notFoundMessage
@@ -288,30 +349,61 @@ try {
         
         foreach ($device in $deviceList) {
             $currentTime = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-            $deviceObj = Get-AzureADDevice -SearchString $device.DeviceName
+            
+            # Get device based on input type (DeviceName or DeviceId)
+            if ($useDeviceId) {
+                # Using Azure AD Device ID directly
+                $deviceId = $device.AzureADDeviceId
+                if ([string]::IsNullOrWhiteSpace($deviceId)) {
+                    $deviceId = $device.DeviceId
+                }
+                
+                if ([string]::IsNullOrWhiteSpace($deviceId)) {
+                    $notFoundMessage = "[$currentTime] WARNING: Empty Device ID in CSV row."
+                    Write-Host $notFoundMessage -ForegroundColor Yellow
+                    Add-Content -Path $logFile -Value $notFoundMessage
+                    Add-Content -Path $errorLogFile -Value $notFoundMessage
+                    continue
+                }
+                
+                try {
+                    $deviceObj = Get-AzureADDevice -ObjectId $deviceId -ErrorAction Stop
+                } catch {
+                    $notFoundMessage = "[$currentTime] WARNING: No device found in AAD with ID: $deviceId"
+                    Write-Host $notFoundMessage -ForegroundColor Yellow
+                    Add-Content -Path $logFile -Value $notFoundMessage
+                    Add-Content -Path $errorLogFile -Value $notFoundMessage
+                    continue
+                }
+            } else {
+                # Using Device Name (original logic)
+                $deviceObj = Get-AzureADDevice -SearchString $device.DeviceName
+            }
             
             if ($deviceObj -ne $null) {
                 foreach ($dev in $deviceObj) {
+                    $deviceIdentifier = if ($useDeviceId) { $deviceId } else { $device.DeviceName }
+                    
                     if ($groupMembers -contains $dev.ObjectId) {
-                        $alreadyInGroupMessage = "[$currentTime] INFO: Device $($device.DeviceName) is already a member of group $groupName."
+                        $alreadyInGroupMessage = "[$currentTime] INFO: Device $deviceIdentifier is already a member of group $groupName."
                         Write-Host $alreadyInGroupMessage
                         Add-Content -Path $logFile -Value $alreadyInGroupMessage
                     } else {
                         try {
                             Add-AzureADGroupMember -ObjectId $groupObj.ObjectId -RefObjectId $dev.ObjectId       
-                            $successMessage = "[$currentTime] SUCCESS: Device $($device.DeviceName) added to group $groupName."
+                            $successMessage = "[$currentTime] SUCCESS: Device $deviceIdentifier added to group $groupName."
                             Write-Host $successMessage -ForegroundColor Green
                             Add-Content -Path $logFile -Value $successMessage
                         }
                         catch {
                             $errMsg = $_.Exception.Message
                             if ($errMsg -like '*One or more added object references already exist for the following modified properties*') {
-                                $alreadyMsg = "[$currentTime] WARNING: Device $($device.DeviceName) is already a member of group $groupName (detected by error)."
-                                Write-Host "Device $($device.DeviceName) is already in the group $groupName (detected by error)." -ForegroundColor Yellow
+                                $alreadyMsg = "[$currentTime] WARNING: Device $deviceIdentifier is already a member of group $groupName (detected by error)."
+                                Write-Host "Device $deviceIdentifier is already in the group $groupName (detected by error)." -ForegroundColor Yellow
                                 Add-Content -Path $logFile -Value $alreadyMsg
                                 Add-Content -Path $errorLogFile -Value $alreadyMsg
                             } else {
-                                $errorMessage = "[$currentTime] ERROR: Device $($device.DeviceName) could not be added to the group. Error: $errMsg"
+                                $errorMessage = "[$currentTime] ERROR: Device $deviceIdentifier could not be added to the group. Error: $errMsg"
                                 Write-Host $errorMessage -ForegroundColor Red
                                 Add-Content -Path $logFile -Value $errorMessage
                                 Add-Content -Path $errorLogFile -Value $errorMessage
@@ -320,7 +412,8 @@ try {
                     }
                 }
             } else {
-                $notFoundMessage = "[$currentTime] WARNING: No device found in AAD for $($device.DeviceName)."
+                $deviceIdentifier = if ($useDeviceId) { $deviceId } else { $device.DeviceName }
+                $notFoundMessage = "[$currentTime] WARNING: No device found in AAD for $deviceIdentifier."
                 Write-Host $notFoundMessage -ForegroundColor Yellow
                 Add-Content -Path $logFile -Value $notFoundMessage
                 Add-Content -Path $errorLogFile -Value $notFoundMessage
