@@ -2,22 +2,21 @@
 
 [![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B%20%7C%207%2B-blue?logo=powershell)](https://github.com/PowerShell/PowerShell)
 [![License](https://img.shields.io/badge/License-GPL%20v3-green.svg)](LICENSE)
-[![Last Update](https://img.shields.io/badge/Last%20Update-November%202025-brightgreen)](https://github.com/roalhelm/PowershellScripts)
-[![Scripts](https://img.shields.io/badge/Scripts-30%2B-orange)](https://github.com/roalhelm/PowershellScripts)
+[![Last Update](https://img.shields.io/badge/Last%20Update-December%202025-brightgreen)](https://github.com/roalhelm/PowershellScripts)
+[![Scripts](https://img.shields.io/badge/Scripts-15%2B-orange)](https://github.com/roalhelm/PowershellScripts)
 [![Cross-Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey?logo=apple)](https://github.com/roalhelm/PowershellScripts)
 
 A comprehensive collection of PowerShell scripts for system administration, Microsoft Intune, Windows Updates, network diagnostics, user/group management, and remediation tasks in modern Windows enterprise environments.
 
 ## 🌟 Latest Features & Highlights
 
-- **🖥️ Cross-Platform Support** - Scripts now work on Windows, macOS, and Linux with PowerShell Core 7+
-- **🔌 Microsoft Endpoint Connectivity Tester V2.1** - Advanced connectivity, latency, and performance tests with HTML reports
+- **🖥️ Cross-Platform Support** - Scripts work on Windows with PowerShell 5.1+ and PowerShell Core 7+
 - **🔄 Comprehensive Intune Management** - Complete suite for Intune management and troubleshooting  
-- **📊 Professional HTML Reports** - Responsive design with Microsoft Look & Feel
-- **🎯 Selective Service Testing** - Choose specific services for targeted checks
-- **⚡ Performance-Optimized** - Configurable tests for quick or comprehensive analyses
+- **👥 User & Group Comparison** - Compare AD and Intune user group memberships
 - **🏥 Advanced Remediation Scripts** - For Intune, Office, Windows Update, Dell Management
-- **🍎 macOS Compatible** - Azure AD device management scripts now fully support macOS
+- **📊 Duplicate Device Detection** - Find and manage duplicate Entra ID devices
+- **🔧 WMI Repair Toolkit** - Local and remote WMI repository repair capabilities
+- **🚀 Remote Script Execution** - Execute scripts on multiple servers simultaneously
 
 ---
 
@@ -28,17 +27,17 @@ A comprehensive collection of PowerShell scripts for system administration, Micr
 git clone https://github.com/roalhelm/PowershellScripts.git
 cd PowershellScripts
 
-# ⭐ Featured: Microsoft Endpoint Connectivity Test with HTML report
-.\CheckMicrosoftEndpointsV2.ps1 -Services All -HtmlReport -OpenReport
-
-# Example: Test only critical services  
-.\CheckMicrosoftEndpointsV2.ps1 -Services Intune,WindowsUpdate,AzureAD
-
 # Repair Intune Management Extension
 .\PSrepairIntuneManagementextention.ps1
 
 # Fix Windows Update issues
 .\REP_WindowsUpdate.ps1
+
+# Compare user group memberships in AD
+.\ADCompareUserGroups.ps1
+
+# Compare Intune users
+.\IntuneCompareUser\IntuneCompareUser.ps1
 ```
 
 ## 📋 System Requirements
@@ -77,53 +76,7 @@ pwsh
 
 ---
 
-## 🏆 Featured Script: Microsoft Endpoint Connectivity Tester V2.1
-
-### ✨ What's New in Version 2.1?
-- **🎨 HTML Report Generation** - Professional, responsive reports with Microsoft Design
-- **🎯 Service Selection** - Interactive menu + parameter-based selection (10 Microsoft services)
-- **⚡ Performance Options** - Configurable test depth (Skip Ping/Speed for faster execution)
-- **📱 Mobile-Optimized** - Reports work perfectly on desktop, tablet, and mobile
-- **🔍 Enhanced Analytics** - Detailed performance statistics with automatic assessment
-
-### 🎮 Easy Usage
-```powershell
-# Interactive mode (recommended for new users)
-.\CheckMicrosoftEndpointsV2.ps1
-
-# All services with HTML report and browser opening
-.\CheckMicrosoftEndpointsV2.ps1 -Services All -HtmlReport -OpenReport
-
-# Quick test of critical services only
-.\CheckMicrosoftEndpointsV2.ps1 -Services WindowsUpdate,Intune,AzureAD -SkipSpeed -Quiet
-
-# Automated for CI/CD
-.\CheckMicrosoftEndpointsV2.ps1 -Services All -HtmlReport "report-$(Get-Date -Format 'yyyy-MM-dd').html" -Quiet
-```
-
-### 🎯 Supported Microsoft Services
-| Service | Description | Endpoints |
-|---------|-------------|-----------|
-| **WindowsUpdate** | Windows Update for Business | Update delivery, WSUS, Microsoft Update |
-| **Autopatch** | Windows Autopatch Management | Automatic patch management |
-| **Intune** | Microsoft Intune Device Management | Enrollment, Management, Compliance |
-| **Defender** | Microsoft Defender Security | Antivirus, Threat Protection, Cloud Security |
-| **AzureAD** | Azure Active Directory | Authentication, Device Registration |
-| **Microsoft365** | Office 365 Suite | Office Apps, SharePoint, OneDrive |
-| **Store** | Microsoft Store | App Distribution, Updates |
-| **Activation** | Windows Activation | Licensing, Validation |
-| **Edge** | Microsoft Edge Browser | Updates, Enterprise Features |
-| **Telemetry** | Windows Diagnostics | Telemetry, Error Reporting |
-
----
-
 ## 📦 Complete Script Overview
-
-### 🌐 Network & Connectivity
-| Script | Version | Description | Features |
-|--------|---------|-------------|----------|
-| **[CheckMicrosoftEndpointsV2.ps1](CheckMicrosoftEndpointsV2.ps1)** | v2.1 ⭐ | **Advanced Microsoft Endpoint Tests** | HTML reports, service selection, performance tests |
-| **[CheckMicrosoftEndpointsV1.ps1](CheckMicrosoftEndpointsV1.ps1)** | v1.1 | Basic Microsoft Endpoint Tests | Connectivity, ping, speed |
 
 ### 🔧 System & Updates
 | Script | Description | Purpose | Admin Rights |
@@ -144,22 +97,7 @@ pwsh
 |--------|---------|----------|-------------|
 | **[ADCompareUserGroups.ps1](ADCompareUserGroups.ps1)** | Compare AD group memberships | Side-by-side comparison | Active Directory |
 | **[IntuneCompareUser/IntuneCompareUser.ps1](IntuneCompareUser/IntuneCompareUser.ps1)** | Entra ID user comparison | Multi-user analysis | Microsoft Graph |
-
-### 🎯 Azure AD/Entra ID Device Management
-| Script | Description | Platform Support | Use Case | Bulk Operations |
-|--------|-------------|------------------|----------|-----------------|
-| **[Add-DevicetoAADGroup/AADChecker.ps1](Add-DevicetoAADGroup/AADChecker.ps1)** | Check devices in Azure AD | 🪟 Windows / 🍎 macOS / 🐧 Linux | Pre-flight checks | ❌ |
-| **[Add-DevicetoAADGroup/Add-DevicesToAADGroupFunction.ps1](Add-DevicetoAADGroup/Add-DevicesToAADGroupFunction.ps1)** | PowerShell function for bulk operations | 🪟 Windows / 🍎 macOS / 🐧 Linux | Automation function | ✅ |
-| **[Add-DevicetoAADGroup/AddAADDeviceToAADGroup.ps1](Add-DevicetoAADGroup/AddAADDeviceToAADGroup.ps1)** ⭐ NEW | **Cross-platform device group assignment** | 🪟 **Windows** / 🍎 **macOS** / 🐧 **Linux** | Manual/automated assignment | ❌ |
-| **[Add-DevicetoAADGroup/AddDeviceCSV.ps1](Add-DevicetoAADGroup/AddDeviceCSV.ps1)** | CSV-based device assignment (GUI) | 🪟 Windows only | Bulk import | ✅ |
-
-#### 🆕 AddAADDeviceToAADGroup.ps1 - Cross-Platform Features (v1.5)
-- **🖥️ Platform Detection**: Automatically detects PowerShell version and platform
-- **📦 Module Selection**: 
-  - PowerShell Core 7+ → Uses **Microsoft.Graph SDK** (macOS/Linux/Windows)
-  - Windows PowerShell 5.1 → Uses **AzureAD module** (Windows only)
-- **🔄 Auto-Installation**: Automatically installs required modules if missing
-- **✅ Full Compatibility**: Works identically on Windows, macOS, and Linux with PowerShell 7+
+| **[Get-DuplicateEntraDevices.ps1](Get-DuplicateEntraDevices.ps1)** | Find duplicate Entra ID devices | Duplicate detection | Microsoft Graph |
 
 ### 🔄 Graph API & Remote Operations
 | Script | API/Service | Function | Pagination |
@@ -248,9 +186,6 @@ pwsh
 
 ### 🌅 Daily IT Administration
 ```powershell
-# Morning network health check with report
-.\CheckMicrosoftEndpointsV2.ps1 -Services All -HtmlReport "Daily-$(Get-Date -Format 'yyyy-MM-dd').html" -OpenReport
-
 # Quickly diagnose and fix Intune issues
 .\Remediations\RepairIntuneWin32Apps\detectIntuneWin32Apps.ps1
 if ($LASTEXITCODE -ne 0) {
@@ -260,62 +195,39 @@ if ($LASTEXITCODE -ne 0) {
 # Systematically fix Windows Update issues
 .\REP_WindowsUpdate.ps1
 .\Remediations\RepairWinUpdate\detection.ps1
-```
 
-### 🍎 Cross-Platform Azure AD Device Management (macOS/Linux)
-```powershell
-# On macOS/Linux with PowerShell 7+
-pwsh
+# Compare user groups
+.\ADCompareUserGroups.ps1
 
-# Install Microsoft.Graph module (auto-installed by script if missing)
-Install-Module Microsoft.Graph -Scope CurrentUser -Force
-
-# Run the script - works identically to Windows
-./Add-DevicetoAADGroup/AddAADDeviceToAADGroup.ps1
-
-# The script automatically:
-# 1. Detects PowerShell Core 7+
-# 2. Uses Microsoft.Graph SDK instead of AzureAD module
-# 3. Installs missing modules if needed
-# 4. Provides same functionality as Windows version
+# Find duplicate devices
+.\Get-DuplicateEntraDevices.ps1
 ```
 
 ### 🚀 Pre-Deployment Validation
 ```powershell
-# Comprehensive network validation before rollout
-.\CheckMicrosoftEndpointsV2.ps1 -Services WindowsUpdate,Intune,AzureAD -HtmlReport "Pre-Deployment-$(Get-Date -Format 'yyyy-MM-dd-HHmm').html"
-
-# Bulk device management for new devices
-.\Add-DevicetoAADGroup\AddDeviceCSV.ps1 -CsvPath ".\NewDevices.csv" -GroupName "Intune-Devices"
-
 # System readiness check
 .\DetectRuntime6.ps1
 .\DriverUpdate.ps1 -WhatIf
+
+# Check Intune user assignments
+.\IntuneCompareUser\IntuneCompareUser.ps1
 ```
 
 ### 📊 Compliance & Monitoring
 ```powershell
-# Weekly compliance reports for management
-$timestamp = Get-Date -Format "yyyy-MM-dd"
-.\CheckMicrosoftEndpointsV2.ps1 -Services All -Quiet -HtmlReport "Weekly-Compliance-Report-$timestamp.html"
-
-# Performance baseline for new locations
-.\CheckMicrosoftEndpointsV2.ps1 -Services All -HtmlReport "Baseline-Performance-$env:COMPUTERNAME.html"
-
 # Automated remediation chain
 .\Remediations\Intune-SyncDevice\Detection.ps1
 .\Remediations\remediatOfficeUpdates\detectOfficeUpdates.ps1
 .\Remediations\RepairWinUpdate\detection.ps1
+
+# WMI health check
+.\PSrepairWMI.ps1 -CheckOnly
 ```
 
 ### 🔧 Troubleshooting Workflows
 ```powershell
 # Comprehensive problem diagnosis
-.\CheckMicrosoftEndpointsV2.ps1 -Services All -HtmlReport "Incident-$(Get-Date -Format 'yyyy-MM-dd-HHmm').html"
 .\TroubleshootingGuide\Collect-Win11_24H2_Diagnostics.ps1
-
-# Isolate specific service issues
-.\CheckMicrosoftEndpointsV2.ps1 -Services Intune -SkipSpeed -HtmlReport "Intune-Specific-Analysis.html"
 
 # Multi-stage Windows Update repair
 .\Remediations\RepairWinUpdate\detectSTEP1.ps1
@@ -327,17 +239,6 @@ $timestamp = Get-Date -Format "yyyy-MM-dd"
 ---
 
 ## 🔧 Advanced Configuration & Best Practices
-
-### ⚙️ CheckMicrosoftEndpointsV2.ps1 - All Parameters
-```powershell
-# Complete parameter overview
--Services          # All, WindowsUpdate, Autopatch, Intune, Defender, AzureAD, Microsoft365, Store, Activation, Edge, Telemetry, Interactive
--SkipPing         # Skip ping tests (faster execution)
--SkipSpeed        # Skip speed tests (even faster)
--Quiet            # Silent mode (ideal for automation/CI-CD)
--HtmlReport       # Path for HTML report (automatic timestamp if not specified)
--OpenReport       # Automatically open report in default browser
-```
 
 ### 📁 Recommended Enterprise Directory Structure
 ```
