@@ -241,26 +241,24 @@ if ($LASTEXITCODE -ne 0) {
 ## 🔧 Advanced Configuration & Best Practices
 
 ### 📁 Recommended Enterprise Directory Structure
-```
+```powershell
 C:\Scripts\PowershellScripts\
 ├── Core\
-│   ├── CheckMicrosoftEndpointsV2.ps1
 │   ├── PSrepairIntuneManagementextention.ps1
-│   └── REP_WindowsUpdate.ps1
+│   ├── REP_WindowsUpdate.ps1
+│   └── PSrepairWMI.ps1
 ├── Reports\
-│   ├── Daily\
-│   ├── Weekly\
-│   ├── Incident\
-│   └── Baseline\
+│   ├── Remediation\
+│   └── Diagnostics\
 ├── Logs\
 │   ├── Remediation\
 │   └── Diagnostics\
 ├── Config\
 │   ├── DeviceGroups.csv
-│   └── ServiceProfiles.json
+│   └── UserGroups.csv
 └── Automation\
     ├── ScheduledTasks\
-    └── CI-CD-Integration\
+    └── RemediationScripts\
 ```
 
 ### 🔒 Security & Permissions Matrix
@@ -279,13 +277,13 @@ C:\Scripts\PowershellScripts\
 ### 📖 Script-Specific Help
 ```powershell
 # Detailed help for each script
-Get-Help .\CheckMicrosoftEndpointsV2.ps1 -Full
-Get-Help .\PSrepairIntuneManagementextention.ps1 -Examples
+Get-Help .\PSrepairIntuneManagementextention.ps1 -Full
+Get-Help .\REP_WindowsUpdate.ps1 -Examples
 Get-Help .\Remediations\RepairIntuneWin32Apps\remediateIntuneWin32Apps.ps1 -Parameter All
 
-# Parameter-specific information
-Get-Help .\CheckMicrosoftEndpointsV2.ps1 -Parameter Services
-Get-Help .\CheckMicrosoftEndpointsV2.ps1 -Parameter HtmlReport
+# View script documentation
+Get-Help .\ADCompareUserGroups.ps1 -Detailed
+Get-Help .\Get-DuplicateEntraDevices.ps1 -Examples
 ```
 
 ### 🔍 Troubleshooting Resources
