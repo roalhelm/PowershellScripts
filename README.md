@@ -312,60 +312,32 @@ $RequiredModules | ForEach-Object {
 
 ## 📈 Version History & Roadmap
 
-### 🏆 CheckMicrosoftEndpointsV2.ps1 - Evolution Timeline
-
-#### 🚀 Version 2.1 (October 2025) - **Current Release**
-- ✨ **HTML Report Generation** - Responsive design with Microsoft Look & Feel
-- 🎯 **Service Selection Framework** - Interactive menu + parameter-based service selection
-- ⚡ **Performance Optimization Options** - Configurable test depth for different scenarios
-- 📱 **Mobile-First Design** - Reports work perfectly on all devices
-- 🔍 **Enhanced Analytics Engine** - Detailed performance statistics with automatic assessment
-
-#### 📊 Version 2.0 (October 2025)
-- 🎮 **Interactive Menu System** - User-friendly service selection for non-experts
-- 📈 **Selective Service Testing** - Test only relevant services for specific use cases
-- 🚀 **Speed & Efficiency Modes** - Skip optional tests for faster CI/CD integration
-- 🔇 **Automation-Ready Quiet Mode** - Perfect for scripting and unattended operations
-
-#### 🔧 Version 1.1 (October 2025)
-- 🏓 **Network Latency Analysis** - Ping tests for performance monitoring
-- 📈 **Bandwidth & Speed Testing** - Download speed analysis for capacity planning
-- 🎨 **Enhanced Console Output** - Color-coded results for better readability
-- 📊 **Performance Statistics** - Automatic metrics and service assessments
-
-#### 🌱 Version 1.0 (October 2025)
-- 🔌 **Core Connectivity Framework** - TCP connection tests to all Microsoft services
-- 🌐 **Comprehensive Service Coverage** - Support for 10 critical Microsoft cloud services
-- 🎯 **Business Impact Analysis** - Understanding the effects of connectivity issues
-- 📋 **Structured Reporting** - Organized results by service categories
-
 ### 🔮 Roadmap & Planned Features
-- 🤖 **AI-Powered Recommendations** - Intelligent troubleshooting suggestions
+- 🤖 **Enhanced Remediation Automation** - Intelligent troubleshooting workflows
 - 🔄 **Integration APIs** - REST API for SIEM/monitoring systems
-- 📧 **Email Reports** - Automatic report delivery
+- 📧 **Email Notifications** - Automatic alert delivery
 - 🌍 **Multi-Language Support** - International localization
-- 📱 **Mobile App Companion** - Native app for report viewing
 - 🍎 **Enhanced macOS/Linux Support** - More cross-platform scripts
+- 📊 **Advanced Reporting** - Enhanced diagnostic reports
 
 ---
 
 ## 🖥️ Cross-Platform Compatibility Guide
 
-### ✅ Fully Compatible Scripts (Windows, macOS, Linux with PowerShell 7+)
-| Script | PowerShell Core 7+ | Windows PS 5.1 | Notes |
-|--------|-------------------|----------------|-------|
-| **AddAADDeviceToAADGroup.ps1** | ✅ Microsoft.Graph | ✅ AzureAD | Auto-detection |
-| **Add-DevicesToAADGroupFunction.ps1** | ✅ Microsoft.Graph | ✅ AzureAD | Auto-detection |
-| **GraphApiOdataNextLink.ps1** | ✅ Microsoft.Graph | ✅ Microsoft.Graph | Pure Graph API |
-| **IntuneCompareUser.ps1** | ✅ Microsoft.Graph | ✅ Microsoft.Graph | Pure Graph API |
+### ✅ Fully Compatible Scripts (Windows with PowerShell 5.1+)
+| Script | PowerShell 5.1+ | PowerShell Core 7+ | Notes |
+|--------|----------------|-------------------|-------|
+| **GraphApiOdataNextLink.ps1** | ✅ | ✅ | Pure Graph API |
+| **IntuneCompareUser.ps1** | ✅ | ✅ | Pure Graph API |
+| **Get-DuplicateEntraDevices.ps1** | ✅ | ✅ | Pure Graph API |
 
 ### ⚠️ Windows-Only Scripts
 | Script | Reason | Alternative |
 |--------|--------|-------------|
-| **AddDeviceCSV.ps1** | System.Windows.Forms (GUI) | Manual CSV creation |
 | **PSrepairIntuneManagementextention.ps1** | Windows-specific services | N/A |
 | **REP_WindowsUpdate.ps1** | Windows Update components | N/A |
 | **PSrepairWMI.ps1** | WMI (Windows-specific) | N/A |
+| **DriverUpdate.ps1** | Windows drivers and BitLocker | N/A |
 
 ### 🔧 Platform Detection Example
 ```powershell
@@ -427,46 +399,22 @@ Connect-MgGraph -Scopes @(
     "User.Read.All",
     "Directory.AccessAsUser.All"
 )
-
-# Connectivity pre-check
-Test-NetConnection github.com -Port 443 -InformationLevel Quiet
-```
-
-### 🍎 macOS / 🐧 Linux Specific Setup
-```bash
-# Install PowerShell 7+ on macOS
-brew install --cask powershell
-
-# Install PowerShell 7+ on Linux (Ubuntu/Debian)
-wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
-sudo dpkg -i packages-microsoft-prod.deb
-sudo apt-get update
-sudo apt-get install -y powershell
-
-# Launch PowerShell
-pwsh
-
-# Install Microsoft.Graph module
-pwsh -Command "Install-Module Microsoft.Graph -Scope CurrentUser -Force"
-
-# Test cross-platform scripts
-pwsh -File ./Add-DevicetoAADGroup/AddAADDeviceToAADGroup.ps1
 ```
 
 ### 3️⃣ First Run & Validation
 ```powershell
-# Step 1: Test basic functionality
-.\CheckMicrosoftEndpointsV2.ps1 -Services WindowsUpdate -SkipPing -SkipSpeed -Quiet
-
-# Step 2: Try interactive mode  
-.\CheckMicrosoftEndpointsV2.ps1
-
-# Step 3: Full test with HTML report
-.\CheckMicrosoftEndpointsV2.ps1 -Services All -HtmlReport "Initial-Test.html" -OpenReport
-
-# Step 4: Test remediation scripts (with caution!)
+# Step 1: Test remediation scripts (with caution!)
 .\DetectRuntime6.ps1
 .\Remediations\Intune-SyncDevice\Detection.ps1
+
+# Step 2: Check user groups
+.\ADCompareUserGroups.ps1
+
+# Step 3: Find duplicate devices
+.\Get-DuplicateEntraDevices.ps1
+
+# Step 4: Test WMI health
+.\PSrepairWMI.ps1 -CheckOnly
 ```
 
 ---
@@ -488,7 +436,8 @@ pwsh -File ./Add-DevicetoAADGroup/AddAADDeviceToAADGroup.ps1
 $TestEnvironments = @("DEV", "TEST", "UAT")
 $TestEnvironments | ForEach-Object {
     Write-Host "Testing in $_ environment..." -ForegroundColor Cyan
-    .\CheckMicrosoftEndpointsV2.ps1 -Services All -HtmlReport "Test-$_-$(Get-Date -Format 'yyyy-MM-dd').html"
+    # Run remediation tests
+    .\Remediations\RepairWinUpdate\detection.ps1
 }
 
 # 2. Staged Rollout
@@ -541,13 +490,13 @@ Use [GitHub Issues](https://github.com/roalhelm/PowershellScripts/issues) for:
 ### 📈 Script Metrics
 | Category | Script Count | Lines of Code | Last Updated | Platform Support |
 |----------|--------------|---------------|--------------|------------------|
-| **Network & Connectivity** | 2 | 1,200+ | October 2025 | All Platforms |
-| **System & Updates** | 4 | 800+ | October 2025 | Windows Only |
-| **Intune & MDM** | 2 | 400+ | October 2025 | Windows Only |
-| **User & Group Management** | 6 | 600+ | November 2025 | **Cross-Platform** ⭐ |
-| **Remediation Scripts** | 15+ | 1,000+ | October 2025 | Windows Only |
-| **Troubleshooting Tools** | 2 | 300+ | October 2025 | Windows Only |
-| **Total** | **30+** | **4,300+** | **Actively maintained** | **Mixed** |
+| **System & Updates** | 4 | 800+ | December 2025 | Windows Only |
+| **Intune & MDM** | 2 | 400+ | December 2025 | Windows Only |
+| **User & Group Management** | 3 | 600+ | December 2025 | Windows ⭐ |
+| **Remediation Scripts** | 15+ | 1,000+ | December 2025 | Windows Only |
+| **Troubleshooting Tools** | 2 | 300+ | December 2025 | Windows Only |
+| **Graph API & Remote** | 3 | 500+ | December 2025 | Windows |
+| **Total** | **15+** | **3,600+** | **Actively maintained** | **Windows** |
 
 ---
 
@@ -585,9 +534,8 @@ This project is licensed under the **[GNU General Public License v3.0](LICENSE)*
 [![Enterprise Ready](https://img.shields.io/badge/Enterprise-Ready-success)](https://github.com/roalhelm/PowershellScripts)
 [![Security Tested](https://img.shields.io/badge/Security-Tested-green)](https://github.com/roalhelm/PowershellScripts)
 [![Documentation](https://img.shields.io/badge/Documentation-Complete-brightgreen)](https://github.com/roalhelm/PowershellScripts)
-[![Cross-Platform](https://img.shields.io/badge/Cross--Platform-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey)](https://github.com/roalhelm/PowershellScripts)
 
-### 💼 **Professional** | 🚀 **Continuously Updated** | 🛡️ **Security Focused** | 📱 **Modern Design** | 🏢 **Enterprise Grade** | 🖥️ **Cross-Platform**
+### 💼 **Professional** | 🚀 **Continuously Updated** | 🛡️ **Security Focused** | 🏢 **Enterprise Grade**
 
 ---
 
