@@ -70,11 +70,44 @@ if ($PSVersionTable.Platform -eq 'Unix') {
     exit 1
 }
 
-Write-Output "=========================================="
-Write-Output "INTUNE WIN32 APP REMEDIATION"
-Write-Output "=========================================="
-Write-Output "Starting remediation process..."
-Write-Output ""
+# ========================================
+# LOGGING FUNCTION
+# ========================================
+$Script:LogFilePath = "C:\ProgramData\Microsoft\IntuneManagementExtension\Logs\RepairIntuneWin32Apps_Remediation.log"
+
+function Write-Log {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Message,
+        
+        [Parameter(Mandatory = $false)]
+        [ValidateSet('INFO', 'WARNING', 'ERROR', 'SUCCESS')]
+        [string]$Level = 'INFO'
+    )
+    
+    $timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
+    $logEntry = "$timestamp [$Level] $Message"
+    
+    # Write to log file
+    try {
+        $logEntry | Out-File -FilePath $Script:LogFilePath -Append -Encoding UTF8 -ErrorAction Stop
+    } catch {
+        Write-Output "Warning: Could not write to log file: $_"
+    }
+    
+    # Also write to console for Intune
+    Write-Output $Message
+}
+
+# ========================================
+# START REMEDIATION
+# ========================================
+Write-Log "=========================================="
+Write-Log "INTUNE WIN32 APP REMEDIATION" -Level INFO
+Write-Log "Script Version: 1.5" -Level INFO
+Write-Log "=========================================="
+Write-Log "Starting remediation process..." -Level INFO
+Write-Log ""
 
 # 1. Backup and clean Win32Apps registry
 $regPath = 'HKLM:\SOFTWARE\Microsoft\IntuneManagementExtension\Win32Apps'
@@ -83,53 +116,54 @@ $backupPath = "$env:TEMP\IntuneWin32AppsBackup_$(Get-Date -Format 'yyyyMMdd_HHmm
 if (Test-Path $regPath) {
     try {
         # Create backup
-        Write-Output "[STEP 1/4] Creating registry backup..."
+        Write-Log "[STEP 1/4] Creating registry backup..." -Level INFO
         $null = reg export "HKLM\SOFTWARE\Microsoft\IntuneManagementExtension\Win32Apps" $backupPath /y 2>&1
         if (Test-Path $backupPath) {
-            Write-Output "  ✓ Backup created: $backupPath"
+            Write-Log "  ✓ Backup created: $backupPath" -Level SUCCESS
         } else {
-            Write-Output "  ⚠ Warning: Backup creation failed, but continuing..."
+            Write-Log "  ⚠ Warning: Backup creation failed, but continuing..." -Level WARNING
         }
         
         # Delete registry keys
-        Write-Output "[STEP 2/4] Deleting Win32Apps registry keys..."
+        Write-Log "[STEP 2/4] Deleting Win32Apps registry keys..." -Level INFO
         $keysDeleted = 0
         Get-ChildItem -Path $regPath -ErrorAction Stop | ForEach-Object {
             try {
+                Write-Log "  Deleting registry key: $($_.PSChildName)" -Level INFO
                 Remove-Item -Path $_.PSPath -Recurse -Force -ErrorAction Stop
                 $keysDeleted++
             } catch {
-                Write-Output "  ⚠ Warning: Could not delete $($_.PSChildName): $_"
+                Write-Log "  ⚠ Warning: Could not delete $($_.PSChildName): $_" -Level WARNING
             }
         }
-        Write-Output "  ✓ Deleted $keysDeleted subkey(s) under Win32Apps"
+        Write-Log "  ✓ Deleted $keysDeleted subkey(s) under Win32Apps" -Level SUCCESS
     } catch {
-        Write-Output "  ✗ ERROR: Failed to clean registry: $_"
+        Write-Log "  ✗ ERROR: Failed to clean registry: $_" -Level ERROR
         exit 1
     }
 } else {
-    Write-Output "[STEP 1-2/4] Registry path not found: $regPath"
-    Write-Output "  ⓘ This may indicate Intune Management Extension is not installed"
+    Write-Log "[STEP 1-2/4] Registry path not found: $regPath" -Level WARNING
+    Write-Log "  ⓘ This may indicate Intune Management Extension is not installed" -Level INFO
 }
 
 # 2. Reset Company Portal app (if exists)
-Write-Output "[STEP 3/4] Checking Company Portal app..."
+Write-Log "[STEP 3/4] Checking Company Portal app..." -Level INFO
 $companyPortalPackage = Get-AppxPackage -Name "Microsoft.CompanyPortal" -ErrorAction SilentlyContinue
 
 if ($companyPortalPackage) {
     try {
-        Write-Output "  ⓘ Resetting Company Portal app..."
+        Write-Log "  ⓘ Resetting Company Portal app..." -Level INFO
         Get-AppxPackage -Name "Microsoft.CompanyPortal" | Reset-AppxPackage -ErrorAction Stop
-        Write-Output "  ✓ Company Portal reset successfully"
+        Write-Log "  ✓ Company Portal reset successfully" -Level SUCCESS
     } catch {
-        Write-Output "  ⚠ Warning: Could not reset Company Portal: $_"
+        Write-Log "  ⚠ Warning: Could not reset Company Portal: $_" -Level WARNING
     }
 } else {
-    Write-Output "  ⓘ Company Portal app not found (OK)"
+    Write-Log "  ⓘ Company Portal app not found (OK)" -Level INFO
 }
 
 # 3. Restart IntuneManagementExtension service with retry
-Write-Output "[STEP 4/4] Restarting Intune Management Extension service..."
+Write-Log "[STEP 4/4] Restarting Intune Management Extension service..." -Level INFO
 $serviceName = "IntuneManagementExtension"
 $maxRetries = 3
 $retryCount = 0
@@ -140,19 +174,19 @@ while ($retryCount -lt $maxRetries -and -not $serviceRestarted) {
         $service = Get-Service -Name $serviceName -ErrorAction Stop
         
         if ($service.Status -eq 'Running') {
-            Write-Output "  ⓘ Stopping service... (Attempt $($retryCount + 1)/$maxRetries)"
+            Write-Log "  ⓘ Stopping service... (Attempt $($retryCount + 1)/$maxRetries)" -Level INFO
             Stop-Service -Name $serviceName -Force -ErrorAction Stop
             Start-Sleep -Seconds 2
         }
         
-        Write-Output "  ⓘ Starting service... (Attempt $($retryCount + 1)/$maxRetries)"
+        Write-Log "  ⓘ Starting service... (Attempt $($retryCount + 1)/$maxRetries)" -Level INFO
         Start-Service -Name $serviceName -ErrorAction Stop
         Start-Sleep -Seconds 3
         
         # Verify service is running
         $service = Get-Service -Name $serviceName -ErrorAction Stop
         if ($service.Status -eq 'Running') {
-            Write-Output "  ✓ Service restarted successfully"
+            Write-Log "  ✓ Service restarted successfully" -Level SUCCESS
             $serviceRestarted = $true
         } else {
             throw "Service status is $($service.Status), not Running"
@@ -160,38 +194,38 @@ while ($retryCount -lt $maxRetries -and -not $serviceRestarted) {
     } catch {
         $retryCount++
         if ($retryCount -lt $maxRetries) {
-            Write-Output "  ⚠ Retry $retryCount failed: $_"
+            Write-Log "  ⚠ Retry $retryCount failed: $_" -Level WARNING
             Start-Sleep -Seconds 5
         } else {
-            Write-Output "  ✗ ERROR: Failed to restart service after $maxRetries attempts: $_"
-            Write-Output ""
-            Write-Output "=========================================="
-            Write-Output "REMEDIATION COMPLETED WITH WARNINGS"
-            Write-Output "=========================================="
-            Write-Output "Registry was cleaned, but service restart failed."
-            Write-Output "Recommendation: Manually restart the service or reboot the device."
+            Write-Log "  ✗ ERROR: Failed to restart service after $maxRetries attempts: $_" -Level ERROR
+            Write-Log ""
+            Write-Log "==========================================" -Level WARNING
+            Write-Log "REMEDIATION COMPLETED WITH WARNINGS" -Level WARNING
+            Write-Log "==========================================" -Level WARNING
+            Write-Log "Registry was cleaned, but service restart failed." -Level WARNING
+            Write-Log "Recommendation: Manually restart the service or reboot the device." -Level WARNING
             exit 1
         }
     }
 }
 
 if (-not $serviceRestarted) {
-    Write-Output "  ⓘ Service not found: $serviceName"
-    Write-Output "  ⓘ This may indicate Intune Management Extension is not installed"
+    Write-Log "  ⓘ Service not found: $serviceName" -Level WARNING
+    Write-Log "  ⓘ This may indicate Intune Management Extension is not installed" -Level INFO
 }
 
-Write-Output ""
-Write-Output "=========================================="
-Write-Output "REMEDIATION COMPLETED SUCCESSFULLY"
-Write-Output "=========================================="
-Write-Output "✓ Win32Apps registry cleaned"
-Write-Output "✓ Company Portal reset (if applicable)"
-Write-Output "✓ Intune Management Extension service restarted"
-Write-Output ""
-Write-Output "Next steps:"
-Write-Output "1. Intune will re-evaluate app assignments automatically"
-Write-Output "2. Wait 15-30 minutes for apps to redeploy"
-Write-Output "3. Check Company Portal for app status"
-Write-Output "=========================================="
+Write-Log ""
+Write-Log "==========================================" -Level SUCCESS
+Write-Log "REMEDIATION COMPLETED SUCCESSFULLY" -Level SUCCESS
+Write-Log "==========================================" -Level SUCCESS
+Write-Log "✓ Win32Apps registry cleaned" -Level SUCCESS
+Write-Log "✓ Company Portal reset (if applicable)" -Level SUCCESS
+Write-Log "✓ Intune Management Extension service restarted" -Level SUCCESS
+Write-Log ""
+Write-Log "Next steps:" -Level INFO
+Write-Log "1. Intune will re-evaluate app assignments automatically" -Level INFO
+Write-Log "2. Wait 15-30 minutes for apps to redeploy" -Level INFO
+Write-Log "3. Check Company Portal for app status" -Level INFO
+Write-Log "==========================================" -Level SUCCESS
 
 exit 0

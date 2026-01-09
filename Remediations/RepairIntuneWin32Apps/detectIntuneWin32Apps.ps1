@@ -75,6 +75,43 @@ if ($PSVersionTable.Platform -eq 'Unix') {
     exit 1
 }
 
+# ========================================
+# LOGGING FUNCTION
+# ========================================
+$Script:LogFilePath = "C:\ProgramData\Microsoft\IntuneManagementExtension\Logs\RepairIntuneWin32Apps_Detection.log"
+
+function Write-Log {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Message,
+        
+        [Parameter(Mandatory = $false)]
+        [ValidateSet('INFO', 'WARNING', 'ERROR', 'SUCCESS')]
+        [string]$Level = 'INFO'
+    )
+    
+    $timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
+    $logEntry = "$timestamp [$Level] $Message"
+    
+    # Write to log file
+    try {
+        $logEntry | Out-File -FilePath $Script:LogFilePath -Append -Encoding UTF8 -ErrorAction Stop
+    } catch {
+        Write-Output "Warning: Could not write to log file: $_"
+    }
+    
+    # Also write to console for Intune
+    Write-Output $Message
+}
+
+# ========================================
+# START DETECTION
+# ========================================
+Write-Log "========================================" -Level INFO
+Write-Log "DETECTION: Intune Win32 App Issues" -Level INFO
+Write-Log "Script Version: 1.6" -Level INFO
+Write-Log "========================================" -Level INFO
+
 # Intune Detection Script: Checks AppWorkload.log for failed or not detected Win32 app installations
 
 $logPath = "C:\ProgramData\Microsoft\IntuneManagementExtension\Logs\AppWorkload.log"
@@ -84,15 +121,20 @@ $logPathOld = "C:\ProgramData\Microsoft\IntuneManagementExtension\Logs\AppWorklo
 $logFiles = @()
 if (Test-Path $logPath) {
     $logFiles += $logPath
+    Write-Log "Found log file: $logPath" -Level INFO
 }
 if (Test-Path $logPathOld) {
     $logFiles += $logPathOld
+    Write-Log "Found log file: $logPathOld" -Level INFO
 }
 
 if ($logFiles.Count -eq 0) {
-    Write-Output "No log files found. Intune Management Extension may not be installed or running."
+    Write-Log "No log files found. Intune Management Extension may not be installed or running." -Level ERROR
+    Write-Log "Detection completed with ERROR" -Level ERROR
     exit 1
 }
+
+Write-Log "Starting analysis of $($logFiles.Count) log file(s)..." -Level INFO
 
 # Define enhanced patterns that indicate detection or installation issues
 $patterns = @{
@@ -147,13 +189,15 @@ $patterns = @{
 
 # Only check log entries from the last 10 days
 $cutoff = (Get-Date).AddDays(-10)
+Write-Log "Analyzing log entries from the last 10 days (since: $($cutoff.ToString('yyyy-MM-dd HH:mm:ss')))" -Level INFO
 $allIssues = @()
 
 foreach ($logFile in $logFiles) {
-    Write-Output "Scanning log file: $logFile"
+    Write-Log "Scanning log file: $logFile" -Level INFO
     
     try {
         $logLines = Get-Content -Path $logFile -ErrorAction Stop
+        Write-Log "Processing $($logLines.Count) lines from $(Split-Path $logFile -Leaf)" -Level INFO
         
         foreach ($line in $logLines) {
             # Try to parse date with error handling
@@ -208,46 +252,50 @@ foreach ($logFile in $logFiles) {
             }
         }
     } catch {
-        Write-Output "Error reading log file $logFile : $_"
+        Write-Log "Error reading log file $logFile : $_" -Level ERROR
     }
 }
 
+Write-Log "Analysis completed. Found $($allIssues.Count) issue(s)" -Level INFO
+
 # Output results
 if ($allIssues.Count -gt 0) {
-    Write-Output "`n=========================================="
-    Write-Output "INTUNE WIN32 APP ISSUES DETECTED"
-    Write-Output "=========================================="
-    Write-Output "Total issues found: $($allIssues.Count)"
-    Write-Output "Time period: Last 10 days"
-    Write-Output "=========================================="
+    Write-Log "=========================================="
+    Write-Log "INTUNE WIN32 APP ISSUES DETECTED" -Level WARNING
+    Write-Log "=========================================="
+    Write-Log "Total issues found: $($allIssues.Count)" -Level WARNING
+    Write-Log "Time period: Last 10 days" -Level INFO
+    Write-Log "=========================================="
     
     # Group by category
     $groupedIssues = $allIssues | Group-Object -Property Category
     
     foreach ($group in $groupedIssues) {
-        Write-Output "`n[$($group.Name)] - $($group.Count) issue(s):"
+        Write-Log "[$($group.Name)] - $($group.Count) issue(s):" -Level WARNING
         
         # Get unique apps/policies in this category
         $uniqueItems = $group.Group | Select-Object AppName, PolicyId -Unique
         
         foreach ($item in $uniqueItems) {
             if ($item.AppName) {
-                Write-Output "  - App: $($item.AppName)"
+                Write-Log "  - App: $($item.AppName)" -Level WARNING
             } elseif ($item.PolicyId) {
-                Write-Output "  - Policy ID: $($item.PolicyId)"
+                Write-Log "  - Policy ID: $($item.PolicyId)" -Level WARNING
             } else {
-                Write-Output "  - Unknown app (check logs for details)"
+                Write-Log "  - Unknown app (check logs for details)" -Level WARNING
             }
         }
     }
     
-    Write-Output "`n=========================================="
-    Write-Output "RECOMMENDATION: Run remediation script to clean Win32Apps registry and restart Intune service."
-    Write-Output "=========================================="
+    Write-Log "=========================================="
+    Write-Log "RECOMMENDATION: Run remediation script to clean Win32Apps registry and restart Intune service." -Level WARNING
+    Write-Log "=========================================="
+    Write-Log "Detection completed: NON-COMPLIANT (Issues found)" -Level WARNING
     
     exit 1  # Non-compliant
 } else {
-    Write-Output "No Intune Win32 app issues detected in the last 10 days."
-    Write-Output "System is compliant."
+    Write-Log "No Intune Win32 app issues detected in the last 10 days." -Level SUCCESS
+    Write-Log "System is compliant." -Level SUCCESS
+    Write-Log "Detection completed: COMPLIANT" -Level SUCCESS
     exit 0  # Compliant
 }
