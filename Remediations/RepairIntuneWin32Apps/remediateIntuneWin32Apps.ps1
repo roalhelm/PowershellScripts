@@ -1,6 +1,7 @@
 <#
 .SYNOPSIS
-    Intune remediation script for Win32 app deployment issues (cleans Win32Apps registry and restarts service).
+    Intune remediation script for Win32 app deployment issues with comprehensive logging.
+    Cleans Win32Apps registry, resets Company Portal, restarts service, and logs all activities to Intune Management Extension log folder.
     Windows-only script.
 
     GitHub Repository: https://github.com/roalhelm/PowershellScripts

@@ -2,7 +2,7 @@
 <#
 .SYNOPSIS
     Intune detection script for failed or not detected Win32 app installations (AppWorkload.log analysis).
-    Windows-only script.
+    Windows-only script with comprehensive logging to Intune Management Extension log folder.
 
     GitHub Repository: https://github.com/roalhelm/PowershellScripts
 
@@ -17,9 +17,9 @@
 .NOTES
     File Name     : detectIntuneWin32Apps.ps1
     Author        : Ronny Alhelm
-    Version       : 1.5
+    Version       : 1.6
     Creation Date : October 13, 2025
-    Last Modified : November 25, 2025
+    Last Modified : January 09, 2026
     Requirements  : PowerShell 5.1 or higher, Windows OS
     Platform      : Windows only (uses Windows-specific paths and services)
     Target Use    : Intune proactive remediation detection for Win32 app deployment
@@ -30,6 +30,11 @@
     - Linux: ❌ Not supported (Windows-specific Intune Management Extension)
 
 .CHANGES
+    Version 1.6 (2026-01-09):
+    - Added comprehensive logging to Intune Management Extension log folder
+    - Logs written to: C:\ProgramData\Microsoft\IntuneManagementExtension\Logs\RepairIntuneWin32Apps_Detection.log
+    - Enhanced output with log levels (INFO, WARNING, ERROR, SUCCESS)
+    - Improved visibility for troubleshooting and auditing
     Version 1.5 (2025-11-25):
     - Enhanced error pattern detection (added timeout, network, and download errors)
     - Added Company Portal specific error detection
@@ -52,7 +57,7 @@
     - Initial release
 
 .VERSION
-    1.5
+    1.6
 
 .EXAMPLE
     .\detectIntuneWin32Apps.ps1
