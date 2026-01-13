@@ -22,9 +22,9 @@
     Target Use    : Intune proactive remediation for Win32 app deployment
 
 .PLATFORM COMPATIBILITY
-    - Windows: ✅ Fully supported (requires admin rights)
-    - macOS: ❌ Not supported (Windows-specific Registry and Services)
-    - Linux: ❌ Not supported (Windows-specific Registry and Services)
+    - Windows: Fully supported (requires admin rights)
+    - macOS: Not supported (Windows-specific Registry and Services)
+    - Linux: Not supported (Windows-specific Registry and Services)
 
 .CHANGES
     Version 1.4 (2025-11-25):

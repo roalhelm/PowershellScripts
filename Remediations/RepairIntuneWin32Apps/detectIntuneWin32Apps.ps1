@@ -25,9 +25,9 @@
     Target Use    : Intune proactive remediation detection for Win32 app deployment
 
 .PLATFORM COMPATIBILITY
-    - Windows: ✅ Fully supported
-    - macOS: ❌ Not supported (Windows-specific Intune Management Extension)
-    - Linux: ❌ Not supported (Windows-specific Intune Management Extension)
+    - Windows: Fully supported
+    - macOS: Not supported (Windows-specific Intune Management Extension)
+    - Linux: Not supported (Windows-specific Intune Management Extension)
 
 .CHANGES
     Version 1.6 (2026-01-09):
