@@ -55,3 +55,7 @@ Remediation:
 - Der Store-Installer im SYSTEM-Kontext ist abhaengig von App Installer und Store-Erreichbarkeit.
 - Wenn der Store-Installer unter SYSTEM nicht verfuegbar ist, schreibt das Remediation-Skript einen klaren Fehler und beendet mit Exit 1.
 - Die Remediation fuehrt bei vorhandenem Company Portal eine Deinstallation und anschliessend Neuinstallation durch.
+
+## Nur reinstallieren, wenn Company Portal fehlt (CP.APP.MISSING)
+
+`detection.ps1` fordert absichtlich alle paar Tage eine Neuinstallation an. Wer nur reparieren will, wenn die App wirklich fehlt, nimmt stattdessen `Detect-CompanyPortalMissing.ps1` als Detection und `remediation.ps1` als Remediation. Das ist das Paket, das die [ClientFixPage](https://roalhelm.github.io/ClientFixPage/) bei `CP.APP.MISSING` empfiehlt. Fuer eine Company Portal App, die installiert ist, aber haengt oder sich nicht anmelden laesst, gibt es `../CompanyPortalReset` (`CP.APP.BROKEN`).

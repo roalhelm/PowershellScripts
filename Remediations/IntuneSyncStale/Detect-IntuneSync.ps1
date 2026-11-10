@@ -11,7 +11,7 @@
       - none of them ran in the last $MaxDaysSinceSync days, or
       - the dmwappushservice service is disabled (sync from the Intune portal cannot reach the device).
 
-    Not applicable (exit 0) when the device has no Intune enrollment: see MDM.ENROLLMENT.BROKEN.
+    Not applicable (exit 0) when the device has no Intune enrollment: see MDM.ENROLLMENT.MISSING.
 
     Exit 0 = healthy or not applicable, exit 1 = issue found (Intune runs the remediation).
 
@@ -48,7 +48,7 @@ function Get-IntuneEnrollmentId {
 try {
     $ids = @(Get-IntuneEnrollmentId)
     if ($ids.Count -eq 0) {
-        $msg = 'Not applicable: no Intune enrollment found (see MDM.ENROLLMENT.BROKEN).'
+        $msg = 'Not applicable: no Intune enrollment found (see MDM.ENROLLMENT.MISSING).'
         Write-FixLog $msg
         Write-Output "$FindingId | OK | $msg"
         exit 0
