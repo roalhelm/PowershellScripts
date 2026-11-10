@@ -53,7 +53,7 @@ Write-FixLog 'Started'
 try {
     $ids = @(Get-IntuneEnrollmentId)
     if ($ids.Count -eq 0) {
-        $msg = 'No Intune enrollment found. Enroll the device again (see MDM.ENROLLMENT.BROKEN).'
+        $msg = 'No Intune enrollment found. Enroll the device again (see MDM.ENROLLMENT.MISSING).'
         Write-FixLog $msg 'ERROR'
         Write-Output "$FindingId | Failed | $msg"
         exit 1
