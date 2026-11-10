@@ -41,10 +41,30 @@ function Write-FixLog {
     catch { }
 }
 
-function Get-LatestEventTime {
-    param([int]$Id)
-    try { return (Get-WinEvent -FilterHashtable @{ LogName = $BitLockerLog; Id = $Id } -MaxEvents 1 -ErrorAction Stop).TimeCreated }
-    catch { return $null }
+# Event Viewer shows this channel as BitLocker-API > Management; resolve the name on the device.
+try {
+    $found = @(Get-WinEvent -ListLog 'Microsoft-Windows-BitLocker*' -ErrorAction Stop | Where-Object { $_.LogName -like '*Management' })
+    if ($found.Count -gt 0) { $BitLockerLog = $found[0].LogName }
+}
+catch { }
+
+function Get-RecoveryKeyBackupTimes {
+    # Newest success (845) for one of the current recovery password protectors, newest failure (846)
+    # for the OS drive. Events of other volumes or removed protectors are ignored.
+    param([string[]]$ProtectorIds)
+    $result = @{ ok = $null; fail = $null }
+    $events = @()
+    try { $events = @(Get-WinEvent -FilterHashtable @{ LogName = $BitLockerLog; Id = 845, 846 } -MaxEvents 200 -ErrorAction Stop) } catch { }
+    foreach ($entry in $events) {
+        $message = [string]$entry.Message
+        if ($entry.Id -eq 845 -and -not $result.ok) {
+            foreach ($id in $ProtectorIds) { if ($id -and $message -like ('*' + $id.Trim('{}') + '*')) { $result.ok = $entry.TimeCreated } }
+        }
+        elseif ($entry.Id -eq 846 -and -not $result.fail -and $message -like ('*' + $env:SystemDrive + '*')) {
+            $result.fail = $entry.TimeCreated
+        }
+    }
+    return $result
 }
 
 try {
@@ -62,13 +82,14 @@ try {
         exit 0
     }
     $recovery = @($volume.KeyProtector | Where-Object { [string]$_.KeyProtectorType -eq 'RecoveryPassword' })
-    $lastOk = Get-LatestEventTime -Id 845
-    $lastFail = Get-LatestEventTime -Id 846
+    $backup = Get-RecoveryKeyBackupTimes -ProtectorIds @($recovery | ForEach-Object { [string]$_.KeyProtectorId })
+    $lastOk = $backup.ok
+    $lastFail = $backup.fail
 
     $problem = $null
     if ($recovery.Count -eq 0) { $problem = 'no recovery password protector exists' }
     elseif ($lastFail -and (-not $lastOk -or $lastFail -gt $lastOk)) { $problem = ('last backup to Entra ID failed ({0:yyyy-MM-dd HH:mm})' -f $lastFail) }
-    elseif (-not $lastOk) { $problem = 'no successful backup to Entra ID logged' }
+    elseif (-not $lastOk) { $problem = 'no successful backup of the current recovery password logged' }
 
     if ($problem) {
         $msg = "Recovery key not confirmed in Entra ID: $problem."

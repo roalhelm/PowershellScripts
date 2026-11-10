@@ -2,7 +2,7 @@
 
 Finding ID: `BL.WINRE.DISABLED` (same ID as [Get-ClientHealth.ps1](https://github.com/roalhelm/ClientFixPage)). The [ClientFixPage](https://roalhelm.github.io/ClientFixPage/) recommends this package when its report shows the finding.
 
-Detects a disabled WinRE by reading `C:\Windows\System32\Recovery\ReAgent.xml` (language independent, unlike `reagentc /info`). Silent BitLocker encryption, Autopilot reset and remote wipe need WinRE. The remediation runs `reagentc /enable`. No partition is changed: a missing `Winre.wim` or a broken recovery partition is reported for manual repair.
+Detects a disabled WinRE with `reagentc /info`: it looks for the WinRE location `\\?\GLOBALROOT\device\...`, which only appears while WinRE is enabled and is the same in every language (fallback: `ReAgent.xml`). Silent BitLocker encryption, Autopilot reset and remote wipe need WinRE. The remediation runs `reagentc /enable`. No partition is changed: a missing `Winre.wim` or a broken recovery partition is reported for manual repair.
 
 ## Files
 

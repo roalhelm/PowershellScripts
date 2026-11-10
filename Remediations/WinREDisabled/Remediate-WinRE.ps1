@@ -5,7 +5,7 @@
 .DESCRIPTION
     Finding ID: BL.WINRE.DISABLED (same ID as Get-ClientHealth.ps1 in roalhelm/ClientFixPage).
 
-    Runs reagentc.exe /enable and reads ReAgent.xml again. No partition is changed.
+    Runs reagentc.exe /enable and checks the state again with reagentc /info. No partition is changed.
     When enabling fails, Winre.wim is usually missing (C:\Windows\System32\Recovery) or the
     recovery partition is damaged or too small. Those cases need a manual repair, see the
     step-by-step guide for BL.WINRE.DISABLED on the ClientFixPage.
@@ -26,7 +26,6 @@
 
 $FindingId = 'BL.WINRE.DISABLED'
 $LogFile   = Join-Path $env:ProgramData 'Microsoft\IntuneManagementExtension\Logs\ClientFix.log'
-$Xml       = Join-Path $env:SystemRoot 'System32\Recovery\ReAgent.xml'
 
 function Write-FixLog {
     param([string]$Message, [string]$Level = 'INFO')
@@ -39,21 +38,27 @@ function Write-FixLog {
     catch { }
 }
 
-function Test-WinREEnabled {
-    if (-not (Test-Path -LiteralPath $Xml)) { return $false }
+function Get-WinREState {
+    # Returns 'enabled', 'disabled' or $null (unknown). reagentc /info shows the WinRE location as
+    # \\?\GLOBALROOT\device\... only while WinRE is enabled; that path is language independent.
+    $output = & (Join-Path $env:SystemRoot 'System32\reagentc.exe') /info 2>&1 | Out-String
+    if ($LASTEXITCODE -eq 0) {
+        if ($output -match '\\\\\?\\GLOBALROOT\\device\\') { return 'enabled' }
+        return 'disabled'
+    }
+    # Fallback only: ReAgent.xml InstallState is 1 while enabled.
     try {
-        [xml]$content = Get-Content -LiteralPath $Xml -Raw
-        return ([string]$content.WindowsRE.InstallState.state -eq '1')
+        [xml]$xml = Get-Content -LiteralPath (Join-Path $env:SystemRoot 'System32\Recovery\ReAgent.xml') -Raw -ErrorAction Stop
+        if ([string]$xml.WindowsRE.InstallState.state -eq '1') { return 'enabled' }
     }
-    catch {
-        return $false
-    }
+    catch { }
+    return $null
 }
 
 Write-FixLog 'Started'
 
 try {
-    if (Test-WinREEnabled) {
+    if ((Get-WinREState) -eq 'enabled') {
         Write-Output "$FindingId | Fixed | WinRE is already enabled."
         exit 0
     }
@@ -61,7 +66,7 @@ try {
     $code = $LASTEXITCODE
     Write-FixLog ("reagentc /enable exit code {0}: {1}" -f $code, (($output | Out-String).Trim() -replace '\s+', ' '))
 
-    if (Test-WinREEnabled) {
+    if ((Get-WinREState) -eq 'enabled') {
         $msg = 'WinRE enabled.'
         Write-FixLog "Finished: $msg"
         Write-Output "$FindingId | Fixed | $msg"
