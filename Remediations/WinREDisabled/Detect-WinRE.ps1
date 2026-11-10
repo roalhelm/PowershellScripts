@@ -5,8 +5,9 @@
 .DESCRIPTION
     Finding ID: BL.WINRE.DISABLED (same ID as Get-ClientHealth.ps1 in roalhelm/ClientFixPage).
 
-    Read-only. Reads C:\Windows\System32\Recovery\ReAgent.xml, which is language independent
-    (the output of reagentc /info is localized). InstallState 1 means enabled.
+    Read-only. Runs reagentc /info and looks for the WinRE location (\\?\GLOBALROOT\device\...),
+    which only appears while WinRE is enabled and is the same in every language.
+    Falls back to ReAgent.xml when reagentc fails; if the state stays unknown, it reports an issue.
     Silent BitLocker encryption through Intune, Autopilot reset and remote wipe need WinRE.
 
     Exit 0 = enabled, exit 1 = disabled or not configured.
@@ -36,22 +37,34 @@ function Write-FixLog {
     catch { }
 }
 
-try {
-    $path = Join-Path $env:SystemRoot 'System32\Recovery\ReAgent.xml'
-    if (-not (Test-Path -LiteralPath $path)) {
-        $msg = 'WinRE is not configured (ReAgent.xml missing).'
-        Write-FixLog $msg 'WARN'
-        Write-Output "$FindingId | Issue | $msg"
-        exit 1
+function Get-WinREState {
+    # Returns 'enabled', 'disabled' or $null (unknown). reagentc /info shows the WinRE location as
+    # \\?\GLOBALROOT\device\... only while WinRE is enabled; that path is language independent.
+    try {
+        $output = & (Join-Path $env:SystemRoot 'System32\reagentc.exe') /info 2>&1 | Out-String
+        if ($LASTEXITCODE -eq 0) {
+            if ($output -match '\\\\\?\\GLOBALROOT\\device\\') { return 'enabled' }
+            return 'disabled'
+        }
     }
-    [xml]$xml = Get-Content -LiteralPath $path -Raw
-    $state = [string]$xml.WindowsRE.InstallState.state
-    if ($state -eq '1') {
+    catch { }   # reagentc.exe missing or blocked: use the fallback below
+    # Fallback only: ReAgent.xml InstallState is 1 while enabled.
+    try {
+        [xml]$xml = Get-Content -LiteralPath (Join-Path $env:SystemRoot 'System32\Recovery\ReAgent.xml') -Raw -ErrorAction Stop
+        if ([string]$xml.WindowsRE.InstallState.state -eq '1') { return 'enabled' }
+    }
+    catch { }
+    return $null
+}
+
+try {
+    $state = Get-WinREState
+    if ($state -eq 'enabled') {
         Write-FixLog 'WinRE is enabled.'
         Write-Output "$FindingId | OK | WinRE is enabled."
         exit 0
     }
-    $msg = "WinRE is disabled (InstallState $state)."
+    $msg = if ($state -eq 'disabled') { 'WinRE is disabled.' } else { 'WinRE state could not be read (reagentc /info failed).' }
     Write-FixLog $msg 'WARN'
     Write-Output "$FindingId | Issue | $msg"
     exit 1
