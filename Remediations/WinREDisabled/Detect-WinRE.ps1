@@ -40,11 +40,14 @@ function Write-FixLog {
 function Get-WinREState {
     # Returns 'enabled', 'disabled' or $null (unknown). reagentc /info shows the WinRE location as
     # \\?\GLOBALROOT\device\... only while WinRE is enabled; that path is language independent.
-    $output = & (Join-Path $env:SystemRoot 'System32\reagentc.exe') /info 2>&1 | Out-String
-    if ($LASTEXITCODE -eq 0) {
-        if ($output -match '\\\\\?\\GLOBALROOT\\device\\') { return 'enabled' }
-        return 'disabled'
+    try {
+        $output = & (Join-Path $env:SystemRoot 'System32\reagentc.exe') /info 2>&1 | Out-String
+        if ($LASTEXITCODE -eq 0) {
+            if ($output -match '\\\\\?\\GLOBALROOT\\device\\') { return 'enabled' }
+            return 'disabled'
+        }
     }
+    catch { }   # reagentc.exe missing or blocked: use the fallback below
     # Fallback only: ReAgent.xml InstallState is 1 while enabled.
     try {
         [xml]$xml = Get-Content -LiteralPath (Join-Path $env:SystemRoot 'System32\Recovery\ReAgent.xml') -Raw -ErrorAction Stop
