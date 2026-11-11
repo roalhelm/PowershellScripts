@@ -3,10 +3,10 @@
 This document helps administrators systematically isolate issues with the Windows 11 24H2 Feature Update on Intune-managed Windows 10/11 devices before opening a support ticket.
 
 ---
-## 🧾 Quick Overview / Checklist
-Work through the points (✔/✘). Attach results to a ticket when escalation is needed.
+## Quick Overview / Checklist
+Work through the points (✓/✗). Attach results to a ticket when escalation is needed.
 
-| Area | Check | Expected | Status (✔/✘) |
+| Area | Check | Expected | Status (✓/✗) |
 |------|-------|----------|---------------|
 | Hardware | TPM 2.0 enabled? | Present & enabled | |
 | Hardware | Secure Boot enabled? | True / Enabled | |
@@ -212,4 +212,4 @@ If `SoftwareDistribution.old` exists and updates work again: delete after a few 
 Run commands in elevated PowerShell when possible. Be cautious with registry and service modifications.
 
 ---
-Good luck with your analysis! 🍀
+Good luck with your analysis!

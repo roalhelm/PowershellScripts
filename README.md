@@ -1,4 +1,4 @@
-# 🛠️ PowerShell Administrative Scripts Collection
+# PowerShell Administrative Scripts Collection
 
 [![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B%20%7C%207%2B-blue?logo=powershell)](https://github.com/PowerShell/PowerShell)
 [![License](https://img.shields.io/badge/License-GPL%20v3-green.svg)](LICENSE)
@@ -8,19 +8,19 @@
 
 A comprehensive collection of PowerShell scripts for system administration, Microsoft Intune, Windows Updates, network diagnostics, user/group management, and remediation tasks in modern Windows enterprise environments.
 
-## 🌟 Latest Features & Highlights
+## Latest Features & Highlights
 
-- **🖥️ Cross-Platform Support** - Scripts work on Windows with PowerShell 5.1+ and PowerShell Core 7+
-- **🔄 Comprehensive Intune Management** - Complete suite for Intune management and troubleshooting  
-- **👥 User & Group Comparison** - Compare AD and Intune user group memberships
-- **🏥 Advanced Remediation Scripts** - For Intune, Office, Windows Update, Dell Management
-- **📊 Duplicate Device Detection** - Find and manage duplicate Entra ID devices
-- **🔧 WMI Repair Toolkit** - Local and remote WMI repository repair capabilities
-- **🚀 Remote Script Execution** - Execute scripts on multiple servers simultaneously
+- **Cross-Platform Support** - Scripts work on Windows with PowerShell 5.1+ and PowerShell Core 7+
+- **Comprehensive Intune Management** - Complete suite for Intune management and troubleshooting  
+- **User & Group Comparison** - Compare AD and Intune user group memberships
+- **Advanced Remediation Scripts** - For Intune, Office, Windows Update, Dell Management
+- **Duplicate Device Detection** - Find and manage duplicate Entra ID devices
+- **WMI Repair Toolkit** - Local and remote WMI repository repair capabilities
+- **Remote Script Execution** - Execute scripts on multiple servers simultaneously
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ```powershell
 # Clone repository
@@ -40,7 +40,7 @@ cd PowershellScripts
 .\IntuneCompareUser\IntuneCompareUser.ps1
 ```
 
-## 📋 System Requirements
+## System Requirements
 
 | Requirement | Details | Usage |
 |-------------|---------|-------|
@@ -61,7 +61,7 @@ Install-Module Microsoft.Graph -Force -AllowClobber
 Connect-MgGraph -Scopes "Device.Read.All", "Group.ReadWrite.All"
 ```
 
-### 🍎 macOS / 🐧 Linux Specific Requirements:
+### macOS / Linux Specific Requirements:
 ```bash
 # Install PowerShell 7+ on macOS
 brew install --cask powershell
@@ -76,115 +76,115 @@ pwsh
 
 ---
 
-## 📦 Complete Script Overview
+## Complete Script Overview
 
-### 🔧 System & Updates
+### System & Updates
 | Script | Description | Purpose | Admin Rights |
 |--------|-------------|---------|--------------|
-| **[DetectRuntime6.ps1](DetectRuntime6.ps1)** | .NET Desktop Runtime 6 Detection | Intune Detection Script | ❌ |
-| **[DriverUpdate.ps1](DriverUpdate.ps1)** | System driver updates via Windows Update | BitLocker-aware driver updates | ✅ |
-| **[REP_WindowsUpdate.ps1](REP_WindowsUpdate.ps1)** | Windows Update component reset | Repair for update issues | ✅ |
-| **[UnblockFiles.ps1](UnblockFiles.ps1)** | File unblocking (security zones) | Security zone removal | ❌ |
+| **[DetectRuntime6.ps1](DetectRuntime6.ps1)** | .NET Desktop Runtime 6 Detection | Intune Detection Script | No |
+| **[DriverUpdate.ps1](DriverUpdate.ps1)** | System driver updates via Windows Update | BitLocker-aware driver updates | Yes |
+| **[REP_WindowsUpdate.ps1](REP_WindowsUpdate.ps1)** | Windows Update component reset | Repair for update issues | Yes |
+| **[UnblockFiles.ps1](UnblockFiles.ps1)** | File unblocking (security zones) | Security zone removal | No |
 
-### 🔄 Microsoft Intune & MDM
+### Microsoft Intune & MDM
 | Script | Category | Description | Use Case |
 |--------|----------|-------------|----------|
 | **[PSrepairIntuneManagementextention.ps1](PSrepairIntuneManagementextention.ps1)** | Repair | Intune Management Extension repair | Win32 app issues |
 | **[ReinstallCompanyPortal.ps1](ReinstallCompanyPortal.ps1)** | Reinstall | Company Portal via WinGet | Portal reinstallation |
 
-### 👥 User & Group Management  
+### User & Group Management  
 | Script | Purpose | Features | Data Source |
 |--------|---------|----------|-------------|
 | **[ADCompareUserGroups.ps1](ADCompareUserGroups.ps1)** | Compare AD group memberships | Side-by-side comparison | Active Directory |
 | **[IntuneCompareUser/IntuneCompareUser.ps1](IntuneCompareUser/IntuneCompareUser.ps1)** | Entra ID user comparison | Multi-user analysis | Microsoft Graph |
 | **[Get-DuplicateEntraDevices.ps1](Get-DuplicateEntraDevices.ps1)** | Find duplicate Entra ID devices | Duplicate detection | Microsoft Graph |
 
-### 🔄 Graph API & Remote Operations
+### Graph API & Remote Operations
 | Script | API/Service | Function | Pagination |
 |--------|-------------|----------|------------|
-| **[GraphApiOdataNextLink.ps1](GraphApiOdataNextLink.ps1)** | Microsoft Graph | Paging for large datasets (>1000 objects) | ✅ |
-| **[ExecuteRemoteScript.ps1](ExecuteRemoteScript.ps1)** | PSRemoting | Multi-server script execution | ❌ |
-| **[PSrepairWMI.ps1](PSrepairWMI.ps1)** | WMI | Local/Remote WMI repository repair | ✅ |
+| **[GraphApiOdataNextLink.ps1](GraphApiOdataNextLink.ps1)** | Microsoft Graph | Paging for large datasets (>1000 objects) | Yes |
+| **[ExecuteRemoteScript.ps1](ExecuteRemoteScript.ps1)** | PSRemoting | Multi-server script execution | No |
+| **[PSrepairWMI.ps1](PSrepairWMI.ps1)** | WMI | Local/Remote WMI repository repair | Yes |
 
 ---
 
-## 🏥 Remediation Scripts (Intune/SCCM/GPO Ready)
+## Remediation Scripts (Intune/SCCM/GPO Ready)
 
-### 🛡️ Microsoft Defender Management
+### Microsoft Defender Management
 | Detection | Remediation | Purpose | Exit Codes |
 |-----------|-------------|---------|------------|
-| **[detectDefenderSignatur.txt](Remediations/detectDefenderSignatur.txt)** | ❌ Manual | Check signature currency | 0/1 |
+| **[detectDefenderSignatur.txt](Remediations/detectDefenderSignatur.txt)** | Manual | Check signature currency | 0/1 |
 
-### 🏢 Dell Hardware Management
+### Dell Hardware Management
 | Detection | Remediation | Purpose | Impact |
 |-----------|-------------|---------|---------|
 | **[detectDellCommandUpdate.ps1](Remediations/detectDellCommandUpdate.ps1)** | **[remediatDellCommandUpdate.ps1](Remediations/remediatDellCommandUpdate.ps1)** | Remove Dell Command Update | Reduces bloatware |
 
-### 📋 Microsoft Office Management
+### Microsoft Office Management
 | Detection | Remediation | Purpose | Update Method |
 |-----------|-------------|---------|---------------|
 | **[detectOfficeUpdates.ps1](Remediations/remediatOfficeUpdates/detectOfficeUpdates.ps1)** | **[remediatOfficeUpdates.ps1](Remediations/remediatOfficeUpdates/remediatOfficeUpdates.ps1)** | Install Office updates | Click-to-Run |
 
-### 📱 Intune Device Synchronization
+### Intune Device Synchronization
 | Detection | Remediation | Purpose | Frequency |
 |-----------|-------------|---------|-----------|
 | **[Detection.ps1](Remediations/Intune-SyncDevice/Detection.ps1)** | **[Remediation.ps1](Remediations/Intune-SyncDevice/Remediation.ps1)** | Force Intune sync | As needed |
 
-### 📦 Intune Win32 App Management
+### Intune Win32 App Management
 | Script | Purpose | Features | Registry Impact |
 |--------|---------|----------|----------------|
-| **[CheckLastSync.ps1](Remediations/RepairIntuneWin32Apps/CheckLastSync.ps1)** | Sync trigger for all devices | Bulk operations | ❌ |
-| **[detectIntuneWin32Apps.ps1](Remediations/RepairIntuneWin32Apps/detectIntuneWin32Apps.ps1)** | Win32 app error detection | Registry analysis | ❌ |
-| **[remediateIntuneWin32Apps.ps1](Remediations/RepairIntuneWin32Apps/remediateIntuneWin32Apps.ps1)** | Win32 app repair | IME restart, registry cleanup | ✅ |
+| **[CheckLastSync.ps1](Remediations/RepairIntuneWin32Apps/CheckLastSync.ps1)** | Sync trigger for all devices | Bulk operations | No |
+| **[detectIntuneWin32Apps.ps1](Remediations/RepairIntuneWin32Apps/detectIntuneWin32Apps.ps1)** | Win32 app error detection | Registry analysis | No |
+| **[remediateIntuneWin32Apps.ps1](Remediations/RepairIntuneWin32Apps/remediateIntuneWin32Apps.ps1)** | Win32 app repair | IME restart, registry cleanup | Yes |
 
-### 🔄 Windows Update Repair (Multi-Stage Process)
+### Windows Update Repair (Multi-Stage Process)
 | Stage | Detection | Remediation | Purpose | Severity |
 |-------|-----------|-------------|---------|----------|
-| **1** | **[detectSTEP1.ps1](Remediations/RepairWinUpdate/detectSTEP1.ps1)** | **[remediationSTEP1.ps1](Remediations/RepairWinUpdate/remediationSTEP1.ps1)** | Windows Update service reset | 🟡 Medium |
-| **2** | **[detectSTEP2.ps1](Remediations/RepairWinUpdate/detectSTEP2.ps1)** | **[remediationSTEP2.ps1](Remediations/RepairWinUpdate/remediationSTEP2.ps1)** | SoftwareDistribution reset | 🟠 High |
-| **3** | **[detectSTEP3.ps1](Remediations/RepairWinUpdate/detectSTEP3.ps1)** | **[remediationSTEP3.ps1](Remediations/RepairWinUpdate/remediationSTEP3.ps1)** | Component Store repair | 🔴 Critical |
-| **All** | **[detection.ps1](Remediations/RepairWinUpdate/detection.ps1)** | ❌ Manual | Overall status check | 🔍 Info |
+| **1** | **[detectSTEP1.ps1](Remediations/RepairWinUpdate/detectSTEP1.ps1)** | **[remediationSTEP1.ps1](Remediations/RepairWinUpdate/remediationSTEP1.ps1)** | Windows Update service reset | Medium |
+| **2** | **[detectSTEP2.ps1](Remediations/RepairWinUpdate/detectSTEP2.ps1)** | **[remediationSTEP2.ps1](Remediations/RepairWinUpdate/remediationSTEP2.ps1)** | SoftwareDistribution reset | High |
+| **3** | **[detectSTEP3.ps1](Remediations/RepairWinUpdate/detectSTEP3.ps1)** | **[remediationSTEP3.ps1](Remediations/RepairWinUpdate/remediationSTEP3.ps1)** | Component Store repair | Critical |
+| **All** | **[detection.ps1](Remediations/RepairWinUpdate/detection.ps1)** | Manual | Overall status check | Info |
 
 ---
 
-## 🔍 Troubleshooting & Diagnostics
+## Troubleshooting & Diagnostics
 
-### 🪟 Windows 11 24H2 Specialized Tools
+### Windows 11 24H2 Specialized Tools
 | Script | Purpose | Collects | Output Format |
 |--------|---------|----------|---------------|
 | **[Collect-Win11_24H2_Diagnostics.ps1](TroubleshootingGuide/Collect-Win11_24H2_Diagnostics.ps1)** | Windows 11 24H2 specific diagnostics | System logs, hardware info, configs | ZIP Archive |
 
-### 📖 Documentation & Guides
+### Documentation & Guides
 | File | Content | Target Audience |
 |------|---------|-----------------|
 | **[TroubleshootingGuide.md](TroubleshootingGuide/TroubleshootingGuide.md)** | Comprehensive troubleshooting guide | IT Professionals |
 
 ---
 
-## 🎨 HTML Report Features (CheckMicrosoftEndpointsV2.ps1)
+## HTML Report Features (CheckMicrosoftEndpointsV2.ps1)
 
-### 📊 Professional Dashboard
-- **📈 Statistical Cards** - Tested endpoints, success/failure rate, performance metrics
-- **🎯 Color-Coded Indicators** - Instant visual assessment (Green/Yellow/Red)
-- **📱 Responsive Grid Layout** - Perfect display on desktop, tablet, mobile
-- **⏱️ Live Statistics** - Test duration, timestamp, system information
+### Professional Dashboard
+- **Statistical Cards** - Tested endpoints, success/failure rate, performance metrics
+- **Color-Coded Indicators** - Instant visual assessment (Green/Yellow/Red)
+- **Responsive Grid Layout** - Perfect display on desktop, tablet, mobile
+- **Live Statistics** - Test duration, timestamp, system information
 
-### 📋 Detailed Service Analysis
-- **🏢 Service Grouping** - Clear organization by Microsoft services
-- **✅ Status Badges** - OK/FAILED with meaningful color coding
-- **🌐 Network Details** - IP addresses for troubleshooting and firewall configuration
-- **⚡ Performance Metrics** - Latency (ms) and speed data with automatic assessment
+### Detailed Service Analysis
+- **Service Grouping** - Clear organization by Microsoft services
+- **Status Badges** - OK/FAILED with meaningful color coding
+- **Network Details** - IP addresses for troubleshooting and firewall configuration
+- **Performance Metrics** - Latency (ms) and speed data with automatic assessment
 
-### 🚨 Impact Analysis & Troubleshooting
-- **⚠️ Service Impact Warnings** - What failures practically mean for business operations
-- **🔧 Remediation Recommendations** - Concrete action items for issues
-- **📊 Performance Benchmarking** - Automatic network quality assessment
+### Impact Analysis & Troubleshooting
+- **Service Impact Warnings** - What failures practically mean for business operations
+- **Remediation Recommendations** - Concrete action items for issues
+- **Performance Benchmarking** - Automatic network quality assessment
 
 ---
 
-## 💼 Practical Examples & Workflows
+## Practical Examples & Workflows
 
-### 🌅 Daily IT Administration
+### Daily IT Administration
 ```powershell
 # Quickly diagnose and fix Intune issues
 .\Remediations\RepairIntuneWin32Apps\detectIntuneWin32Apps.ps1
@@ -203,7 +203,7 @@ if ($LASTEXITCODE -ne 0) {
 .\Get-DuplicateEntraDevices.ps1
 ```
 
-### 🚀 Pre-Deployment Validation
+### Pre-Deployment Validation
 ```powershell
 # System readiness check
 .\DetectRuntime6.ps1
@@ -213,7 +213,7 @@ if ($LASTEXITCODE -ne 0) {
 .\IntuneCompareUser\IntuneCompareUser.ps1
 ```
 
-### 📊 Compliance & Monitoring
+### Compliance & Monitoring
 ```powershell
 # Automated remediation chain
 .\Remediations\Intune-SyncDevice\Detection.ps1
@@ -224,7 +224,7 @@ if ($LASTEXITCODE -ne 0) {
 .\PSrepairWMI.ps1 -CheckOnly
 ```
 
-### 🔧 Troubleshooting Workflows
+### Troubleshooting Workflows
 ```powershell
 # Comprehensive problem diagnosis
 .\TroubleshootingGuide\Collect-Win11_24H2_Diagnostics.ps1
@@ -238,9 +238,9 @@ if ($LASTEXITCODE -ne 0) {
 
 ---
 
-## 🔧 Advanced Configuration & Best Practices
+## Advanced Configuration & Best Practices
 
-### 📁 Recommended Enterprise Directory Structure
+### Recommended Enterprise Directory Structure
 ```powershell
 C:\Scripts\PowershellScripts\
 ├── Core\
@@ -261,20 +261,20 @@ C:\Scripts\PowershellScripts\
     └── RemediationScripts\
 ```
 
-### 🔒 Security & Permissions Matrix
+### Security & Permissions Matrix
 | Script Category | Windows Permission | Azure/Intune Permission | Network Access |
 |-----------------|-------------------|-------------------------|----------------|
-| **Network Tests** | Standard User | ❌ Not required | ✅ HTTPS (443) |
-| **System Repair** | 🔑 Administrator | ❌ Not required | ⚠️ Windows Update |
-| **Intune/Graph** | Standard User | 🔑 Graph API Scopes | ✅ Graph Endpoints |
-| **Registry Ops** | 🔑 Administrator | ❌ Not required | ❌ Not required |
-| **WMI Repair** | 🔑 Administrator | ❌ Not required | ⚠️ Remote WMI (if remote) |
+| **Network Tests** | Standard User | Not required | HTTPS (443) |
+| **System Repair** | Administrator | Not required | Windows Update |
+| **Intune/Graph** | Standard User | Graph API Scopes | Graph Endpoints |
+| **Registry Ops** | Administrator | Not required | Not required |
+| **WMI Repair** | Administrator | Not required | Remote WMI (if remote) |
 
 ---
 
-## 📚 Documentation & Support
+## Documentation & Support
 
-### 📖 Script-Specific Help
+### Script-Specific Help
 ```powershell
 # Detailed help for each script
 Get-Help .\PSrepairIntuneManagementextention.ps1 -Full
@@ -286,13 +286,13 @@ Get-Help .\ADCompareUserGroups.ps1 -Detailed
 Get-Help .\Get-DuplicateEntraDevices.ps1 -Examples
 ```
 
-### 🔍 Troubleshooting Resources
+### Troubleshooting Resources
 - **[TroubleshootingGuide.md](TroubleshootingGuide/TroubleshootingGuide.md)** - Comprehensive problem-solving guide
 - **Script Comments** - Detailed inline documentation in each script  
 - **Error Handling** - Detailed error messages with concrete solution suggestions
 - **Exit Codes** - Standardized return values for automation
 
-### 🎓 Learning Resources
+### Learning Resources
 ```powershell
 # Example: Show all available scripts
 Get-ChildItem -Path . -Filter "*.ps1" -Recurse | Select-Object Name, Length, LastWriteTime
@@ -301,37 +301,37 @@ Get-ChildItem -Path . -Filter "*.ps1" -Recurse | Select-Object Name, Length, Las
 $RequiredModules = @('PSWindowsUpdate', 'Microsoft.Graph', 'ActiveDirectory')
 $RequiredModules | ForEach-Object { 
     if (Get-Module -ListAvailable -Name $_) { 
-        "✅ $_ available" 
+        "$_ available" 
     } else { 
-        "❌ $_ missing - Install-Module $_ -Force" 
+        "$_ missing - Install-Module $_ -Force" 
     }
 }
 ```
 
 ---
 
-## 📈 Version History & Roadmap
+## Version History & Roadmap
 
-### 🔮 Roadmap & Planned Features
-- 🤖 **Enhanced Remediation Automation** - Intelligent troubleshooting workflows
-- 🔄 **Integration APIs** - REST API for SIEM/monitoring systems
-- 📧 **Email Notifications** - Automatic alert delivery
-- 🌍 **Multi-Language Support** - International localization
-- 🍎 **Enhanced macOS/Linux Support** - More cross-platform scripts
-- 📊 **Advanced Reporting** - Enhanced diagnostic reports
+### Roadmap & Planned Features
+- **Enhanced Remediation Automation** - Intelligent troubleshooting workflows
+- **Integration APIs** - REST API for SIEM/monitoring systems
+- **Email Notifications** - Automatic alert delivery
+- **Multi-Language Support** - International localization
+- **Enhanced macOS/Linux Support** - More cross-platform scripts
+- **Advanced Reporting** - Enhanced diagnostic reports
 
 ---
 
-## 🖥️ Cross-Platform Compatibility Guide
+## Cross-Platform Compatibility Guide
 
-### ✅ Fully Compatible Scripts (Windows with PowerShell 5.1+)
+### Fully Compatible Scripts (Windows with PowerShell 5.1+)
 | Script | PowerShell 5.1+ | PowerShell Core 7+ | Notes |
 |--------|----------------|-------------------|-------|
-| **GraphApiOdataNextLink.ps1** | ✅ | ✅ | Pure Graph API |
-| **IntuneCompareUser.ps1** | ✅ | ✅ | Pure Graph API |
-| **Get-DuplicateEntraDevices.ps1** | ✅ | ✅ | Pure Graph API |
+| **GraphApiOdataNextLink.ps1** | Yes | Yes | Pure Graph API |
+| **IntuneCompareUser.ps1** | Yes | Yes | Pure Graph API |
+| **Get-DuplicateEntraDevices.ps1** | Yes | Yes | Pure Graph API |
 
-### ⚠️ Windows-Only Scripts
+### Windows-Only Scripts
 | Script | Reason | Alternative |
 |--------|--------|-------------|
 | **PSrepairIntuneManagementextention.ps1** | Windows-specific services | N/A |
@@ -339,7 +339,7 @@ $RequiredModules | ForEach-Object {
 | **PSrepairWMI.ps1** | WMI (Windows-specific) | N/A |
 | **DriverUpdate.ps1** | Windows drivers and BitLocker | N/A |
 
-### 🔧 Platform Detection Example
+### Platform Detection Example
 ```powershell
 # How scripts detect platform and choose appropriate module
 $isPwshCore = $PSVersionTable.PSEdition -eq 'Core'
@@ -357,9 +357,9 @@ if ($isPwshCore) {
 
 ---
 
-## 🛠️ Installation & Setup Guide
+## Installation & Setup Guide
 
-### 1️⃣ Initial Repository Setup
+### 1. Initial Repository Setup
 ```powershell
 # Step 1: Clone repository and setup
 git clone https://github.com/roalhelm/PowershellScripts.git
@@ -376,7 +376,7 @@ if ($currentPath -notlike "*$scriptPath*") {
 }
 ```
 
-### 2️⃣ Dependencies & Prerequisites  
+### 2. Dependencies & Prerequisites  
 ```powershell
 # === Windows PowerShell 5.1 ===
 $WindowsModules = @('PSWindowsUpdate', 'AzureAD', 'ActiveDirectory')
@@ -401,7 +401,7 @@ Connect-MgGraph -Scopes @(
 )
 ```
 
-### 3️⃣ First Run & Validation
+### 3. First Run & Validation
 ```powershell
 # Step 1: Test remediation scripts (with caution!)
 .\DetectRuntime6.ps1
@@ -419,18 +419,18 @@ Connect-MgGraph -Scopes @(
 
 ---
 
-## 🔒 Security, Compliance & Best Practices
+## Security, Compliance & Best Practices
 
-### 🛡️ Enterprise Security Guidelines
+### Enterprise Security Guidelines
 | Security Aspect | Recommendation | Implementation | Compliance |
 |-----------------|----------------|----------------|------------|
-| **Execution Policy** | RemoteSigned minimum | `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser` | ✅ Corporate Policy |
-| **Script Signing** | Recommended for production | Use code signing certificate | ✅ Enterprise Standard |
-| **Credential Management** | Secure Store/Key Vault | `$cred = Get-Credential` instead of hardcoding | 🔒 Security Baseline |
-| **Audit Logging** | All critical operations | Windows Event Log + Custom Logs | 📋 Compliance Ready |
-| **Network Monitoring** | Enable firewall logs | Monitor outbound connections | 🔍 Network Security |
+| **Execution Policy** | RemoteSigned minimum | `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser` | Corporate Policy |
+| **Script Signing** | Recommended for production | Use code signing certificate | Enterprise Standard |
+| **Credential Management** | Secure Store/Key Vault | `$cred = Get-Credential` instead of hardcoding | Security Baseline |
+| **Audit Logging** | All critical operations | Windows Event Log + Custom Logs | Compliance Ready |
+| **Network Monitoring** | Enable firewall logs | Monitor outbound connections | Network Security |
 
-### 🔐 Recommended Deployment Strategy
+### Recommended Deployment Strategy
 ```powershell
 # 1. Test Environment Validation
 $TestEnvironments = @("DEV", "TEST", "UAT")
@@ -451,48 +451,48 @@ $ProductionGroups = @("Pilot-Users", "IT-Department", "All-Users")
 
 ---
 
-## 🤝 Community & Contributing
+## Community & Contributing
 
-### 🌟 How to Contribute
-1. **🍴 Fork** the repository on GitHub
-2. **🌿 Feature Branch** create: `git checkout -b feature/amazing-new-feature`  
-3. **💾 Commit** your changes: `git commit -am 'Add amazing new feature'`
-4. **📤 Push** to branch: `git push origin feature/amazing-new-feature`
-5. **🔄 Pull Request** create with detailed description
+### How to Contribute
+1. **Fork** the repository on GitHub
+2. **Feature Branch** create: `git checkout -b feature/amazing-new-feature`  
+3. **Commit** your changes: `git commit -am 'Add amazing new feature'`
+4. **Push** to branch: `git push origin feature/amazing-new-feature`
+5. **Pull Request** create with detailed description
 
-### 📋 Contribution Standards
-- **📝 Code Style**: PowerShell Best Practices and PSScriptAnalyzer compliance
-- **📚 Documentation**: Complete comment-based help for all functions
-- **🧪 Testing**: Validation in at least 2 different environments
-- **🔄 Backwards Compatibility**: Compatibility with PowerShell 5.1+
-- **🔒 Security**: No hardcoded credentials or unsafe practices
+### Contribution Standards
+- **Code Style**: PowerShell Best Practices and PSScriptAnalyzer compliance
+- **Documentation**: Complete comment-based help for all functions
+- **Testing**: Validation in at least 2 different environments
+- **Backwards Compatibility**: Compatibility with PowerShell 5.1+
+- **Security**: No hardcoded credentials or unsafe practices
 
-### 🐛 Issue Reporting & Support
+### Issue Reporting & Support
 Use [GitHub Issues](https://github.com/roalhelm/PowershellScripts/issues) for:
 
 | Issue Type | Label | Template | Response Time |
 |------------|-------|----------|---------------|
-| 🐛 **Bug Reports** | `bug` | Bug Report Template | 24-48h |
-| 💡 **Feature Requests** | `enhancement` | Feature Request Template | 1 week |
-| 📖 **Documentation** | `documentation` | Documentation Template | 48h |
-| ❓ **Questions** | `question` | Question Template | 24h |
-| 🚨 **Security Issues** | `security` | Private Disclosure | Immediate |
+| **Bug Reports** | `bug` | Bug Report Template | 24-48h |
+| **Feature Requests** | `enhancement` | Feature Request Template | 1 week |
+| **Documentation** | `documentation` | Documentation Template | 48h |
+| **Questions** | `question` | Question Template | 24h |
+| **Security Issues** | `security` | Private Disclosure | Immediate |
 
 ---
 
-## 📈 Repository Statistics & Metrics
+## Repository Statistics & Metrics
 
 ![Language Distribution](https://img.shields.io/badge/PowerShell-95%25-blue)
 ![Documentation](https://img.shields.io/badge/Documentation-Comprehensive-green)
 ![Maintenance](https://img.shields.io/badge/Maintenance-Active-brightgreen)
 ![Enterprise Ready](https://img.shields.io/badge/Enterprise-Ready-blue)
 
-### 📈 Script Metrics
+### Script Metrics
 | Category | Script Count | Lines of Code | Last Updated | Platform Support |
 |----------|--------------|---------------|--------------|------------------|
 | **System & Updates** | 4 | 800+ | December 2025 | Windows Only |
 | **Intune & MDM** | 2 | 400+ | December 2025 | Windows Only |
-| **User & Group Management** | 3 | 600+ | December 2025 | Windows ⭐ |
+| **User & Group Management** | 3 | 600+ | December 2025 | Windows ★ |
 | **Remediation Scripts** | 15+ | 1,000+ | December 2025 | Windows Only |
 | **Troubleshooting Tools** | 2 | 300+ | December 2025 | Windows Only |
 | **Graph API & Remote** | 3 | 500+ | December 2025 | Windows |
@@ -500,25 +500,25 @@ Use [GitHub Issues](https://github.com/roalhelm/PowershellScripts/issues) for:
 
 ---
 
-## 📄 License & Legal Information
+## License & Legal Information
 
-### 📜 Open Source License
+### Open Source License
 This project is licensed under the **[GNU General Public License v3.0](LICENSE)**
 
 **Key License Points:**
-- ✅ **Commercial Use** allowed
-- ✅ **Modification** and **Distribution** allowed  
-- ✅ **Patent Use** protected
-- ⚠️ **Source Code Disclosure** required for distribution
-- ⚠️ **Same License** required for derivative works
+- **Commercial Use** allowed
+- **Modification** and **Distribution** allowed  
+- **Patent Use** protected
+- **Source Code Disclosure** required for distribution
+- **Same License** required for derivative works
 
-### 👨‍💻 Author & Maintainer
+### Author & Maintainer
 **Ronny Alhelm**
-- 🌐 **GitHub**: [@roalhelm](https://github.com/roalhelm)
-- 📧 **Contact**: Via GitHub Issues (preferred)
-- 💼 **Professional**: Enterprise PowerShell Solutions
+- **GitHub**: [@roalhelm](https://github.com/roalhelm)
+- **Contact**: Via GitHub Issues (preferred)
+- **Professional**: Enterprise PowerShell Solutions
 
-### 🙏 Acknowledgments & Credits
+### Acknowledgments & Credits
 - **Microsoft Documentation Team** - For comprehensive API documentation
 - **PowerShell Community** - For best practices and code reviews
 - **Enterprise IT Feedback** - For real-world requirements and use cases
@@ -528,14 +528,14 @@ This project is licensed under the **[GNU General Public License v3.0](LICENSE)*
 
 <div align="center">
 
-## 🎯 Ready for Enterprise Deployment
+## Ready for Enterprise Deployment
 
 [![PowerShell Gallery](https://img.shields.io/badge/PowerShell%20Gallery-Compatible-blue)](https://www.powershellgallery.com/)
 [![Enterprise Ready](https://img.shields.io/badge/Enterprise-Ready-success)](https://github.com/roalhelm/PowershellScripts)
 [![Security Tested](https://img.shields.io/badge/Security-Tested-green)](https://github.com/roalhelm/PowershellScripts)
 [![Documentation](https://img.shields.io/badge/Documentation-Complete-brightgreen)](https://github.com/roalhelm/PowershellScripts)
 
-### 💼 **Professional** | 🚀 **Continuously Updated** | 🛡️ **Security Focused** | 🏢 **Enterprise Grade**
+### **Professional** | **Continuously Updated** | **Security Focused** | **Enterprise Grade**
 
 ---
 

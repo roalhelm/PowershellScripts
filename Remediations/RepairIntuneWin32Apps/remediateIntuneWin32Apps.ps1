@@ -122,7 +122,7 @@ if (Test-Path $regPath) {
         if (Test-Path $backupPath) {
             Write-Log "  ✓ Backup created: $backupPath" -Level SUCCESS
         } else {
-            Write-Log "  ⚠ Warning: Backup creation failed, but continuing..." -Level WARNING
+            Write-Log "  Warning: Backup creation failed, but continuing..." -Level WARNING
         }
         
         # Delete registry keys
@@ -134,7 +134,7 @@ if (Test-Path $regPath) {
                 Remove-Item -Path $_.PSPath -Recurse -Force -ErrorAction Stop
                 $keysDeleted++
             } catch {
-                Write-Log "  ⚠ Warning: Could not delete $($_.PSChildName): $_" -Level WARNING
+                Write-Log "  Warning: Could not delete $($_.PSChildName): $_" -Level WARNING
             }
         }
         Write-Log "  ✓ Deleted $keysDeleted subkey(s) under Win32Apps" -Level SUCCESS
@@ -157,7 +157,7 @@ if ($companyPortalPackage) {
         Get-AppxPackage -Name "Microsoft.CompanyPortal" | Reset-AppxPackage -ErrorAction Stop
         Write-Log "  ✓ Company Portal reset successfully" -Level SUCCESS
     } catch {
-        Write-Log "  ⚠ Warning: Could not reset Company Portal: $_" -Level WARNING
+        Write-Log "  Warning: Could not reset Company Portal: $_" -Level WARNING
     }
 } else {
     Write-Log "  ⓘ Company Portal app not found (OK)" -Level INFO
@@ -195,7 +195,7 @@ while ($retryCount -lt $maxRetries -and -not $serviceRestarted) {
     } catch {
         $retryCount++
         if ($retryCount -lt $maxRetries) {
-            Write-Log "  ⚠ Retry $retryCount failed: $_" -Level WARNING
+            Write-Log "  [WARN] Retry $retryCount failed: $_" -Level WARNING
             Start-Sleep -Seconds 5
         } else {
             Write-Log "  ✗ ERROR: Failed to restart service after $maxRetries attempts: $_" -Level ERROR
